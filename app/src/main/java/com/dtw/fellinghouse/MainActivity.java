@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import com.dtw.fellinghouse.View.BaseActivity;
 import com.dtw.fellinghouse.View.Chart.ChartActivity;
+import com.dtw.fellinghouse.View.Login.LoginActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -76,8 +77,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_login) {
             // Handle the camera action
+            if (getClass().getName() != LoginActivity.class.getName()) {
+                Intent intent = new Intent(this, LoginActivity.class);
+                startActivity(intent);
+            }
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

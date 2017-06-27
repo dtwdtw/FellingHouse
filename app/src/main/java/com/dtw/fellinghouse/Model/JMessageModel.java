@@ -31,7 +31,7 @@ public class JMessageModel {
         JMessageClient.init(context);
     }
 
-    public static synchronized JMessageModel getInstance(Context context) {
+    public static JMessageModel getInstance(Context context) {
         if (jMessageModel == null) {
             jMessageModel = new JMessageModel(context);
         }

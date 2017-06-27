@@ -40,3 +40,17 @@
 -dontwarn com.google.**
 -keep class com.google.gson.** {*;}
 -keep class com.google.protobuf.** {*;}
+
+#Glide
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.AppGlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+
+# SMSSDK
+-dontwarn com.mob.**
+-keep class com.mob.**{*;}
+-dontwarn cn.smssdk.**
+-keep class cn.smssdk.**{*;}

@@ -9,10 +9,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.dtw.fellinghouse.R;
 
 import java.util.List;
 
+import cn.jpush.im.android.api.content.ImageContent;
+import cn.jpush.im.android.api.content.TextContent;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
 
@@ -23,16 +26,17 @@ import cn.jpush.im.android.api.model.Message;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MessageViewHolder> {
     private Context context;
     private List<Message> messageList;
-    public final int TYPE_TEXT = 0;
-    public final int TYPE_IMAGE = 1;
-    public final int TYPE_VOICE = 2;
-    public final int TYPE_CUSTOM = 9;
+    private OnMessageClickListener onMessageClickListener;
     public final int TYPE_SEND = 10;
     public final int TYPE_RECEIVE = 20;
 
     public MessageListAdapter(Context context, List<Message> messageList) {
         this.context = context;
         this.messageList = messageList;
+    }
+
+    public void setOnMessageClickListener(OnMessageClickListener onMessageClickListener){
+        this.onMessageClickListener=onMessageClickListener;
     }
 
     @Override
@@ -66,7 +70,21 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     @Override
     public void onBindViewHolder(MessageViewHolder holder, int position) {
-
+        Message message=messageList.get(position);
+        switch (message.getContentType()){
+            case text:
+                holder.text.setText(((TextContent)message.getContent()).getText());
+                holder.text.setVisibility(View.VISIBLE);
+                break;
+            case image:
+                Glide.with(context)
+                        .load(((ImageContent)message.getContent()).getImg_link())
+                        .into(holder.img);
+                holder.img.setVisibility(View.VISIBLE);
+                break;
+            case voice:
+                break;
+        }
     }
 
     @Override
@@ -83,6 +101,15 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             text= (TextView) itemView.findViewById(R.id.text_text);
             img= (ImageView) itemView.findViewById(R.id.img_img);
             voice= (FrameLayout) itemView.findViewById(R.id.layout_voicd);
+            FrameLayout messageContent= (FrameLayout) itemView.findViewById(R.id.message_content);
+            messageContent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(onMessageClickListener!=null){
+                        onMessageClickListener.onClick(v,getAdapterPosition());
+                    }
+                }
+            });
         }
     }
 }

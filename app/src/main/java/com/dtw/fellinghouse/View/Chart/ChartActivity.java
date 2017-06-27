@@ -20,7 +20,7 @@ import cn.jpush.im.android.api.model.Message;
  * Created by Administrator on 2017/6/23 0023.
  */
 
-public class ChartActivity extends BaseActivity{
+public class ChartActivity extends BaseActivity implements ChartView{
     private List<Message> messageList=new ArrayList<>();
     private RecyclerView recyclerView;
     private MessageListAdapter messageListAdapter;
@@ -35,6 +35,18 @@ public class ChartActivity extends BaseActivity{
         recyclerView= (RecyclerView) findViewById(R.id.recycleview_message_list);
         messageListAdapter=new MessageListAdapter(this,messageList);
         recyclerView.setAdapter(messageListAdapter);
+    }
+
+    @Override
+    public void onMessage(Message message) {
+        messageList.add(message);
+        messageListAdapter.notifyItemInserted(messageList.size()-1);
+    }
+
+    @Override
+    public void onMessage(List<Message> messageList) {
+        messageList.addAll(messageList);
+        messageListAdapter.notifyDataSetChanged();
     }
 
     @Override
