@@ -15,6 +15,14 @@
         <meta-data android:name="Mob-AppKey" android:value="1efab556e6390"/>
         <meta-data android:name="Mob-AppSecret" android:value="0c55bdcbd8488ae911f95822626efa62"/>
 
+        <meta-data android:value="59533ab9e88bad3e1400025d" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="${UMENG_CHANNEL_VALUE}" android:name="UMENG_CHANNEL"/>
+
+        <meta-data android:name="WEIXIN_ID" android:value="wx1ad4cc06feb933da"/>
+        
+        <activity android:name=".wxapi.WXEntryActivity"
+            android:exported="true"/>
+
         <activity android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
@@ -28,6 +36,15 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
         <activity android:name=".View.Login.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".View.Regist.RegistActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".View.SmsCodeLogin.SmsCodeLoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".View.Setting.SettingActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait"/>
     </application>

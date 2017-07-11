@@ -1,18 +1,22 @@
 package com.dtw.fellinghouse.View.Login;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.LogPrinter;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.dtw.fellinghouse.Bean.UserInfoBean;
+import com.dtw.fellinghouse.Config;
 import com.dtw.fellinghouse.Presener.LoginPresener;
 import com.dtw.fellinghouse.R;
+import com.dtw.fellinghouse.View.SmsCodeLogin.SmsCodeLoginActivity;
 import com.dtw.fellinghouse.View.BaseActivity;
+import com.dtw.fellinghouse.View.Regist.RegistActivity;
 
 /**
  * Created by Administrator on 2017/6/26 0026.
@@ -23,7 +27,7 @@ public class LoginActivity extends BaseActivity implements LoginView{
     private EditText password;
     private Button loginBtn;
 
-    private LoginPresener loginPresener=new LoginPresener(this,this);
+    private LoginPresener loginPresener;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,12 +39,41 @@ public class LoginActivity extends BaseActivity implements LoginView{
         phoneNum= (EditText) findViewById(R.id.edit_phone_num);
         password= (EditText) findViewById(R.id.edit_password);
         loginBtn= (Button) findViewById(R.id.btn_login);
+
+        loginPresener=new LoginPresener(this,this);
     }
 
     public void onClick(View v){
         switch (v.getId()){
             case R.id.btn_login:
                 loginPresener.login(phoneNum.getText().toString(),password.getText().toString());
+                break;
+            case R.id.text_regist:
+                Intent regist=new Intent(this, RegistActivity.class);
+                regist.putExtra(Config.Key_PhnoeNum,phoneNum.getText().toString());
+                startActivityForResult(regist,Config.Request_Code_Regist);
+                break;
+            case R.id.btn_smscode_login:
+                Intent smscodeLogin=new Intent(this, SmsCodeLoginActivity.class);
+                smscodeLogin.putExtra(Config.Key_PhnoeNum,phoneNum.getText().toString());
+                startActivityForResult(smscodeLogin,Config.Request_Code_SmsCodeLogin);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case Config.Request_Code_Regist:
+                if(requestCode==RESULT_OK){
+
+                }
+                break;
+            case Config.Request_Code_SmsCodeLogin:
+                if(requestCode==RESULT_OK){
+
+                }
                 break;
         }
     }
@@ -56,17 +89,18 @@ public class LoginActivity extends BaseActivity implements LoginView{
     }
 
     @Override
-    public void onFail(int code, String msg) {
-
-    }
-
-    @Override
-    public void onSuccess(int code, String msg) {
-
+    protected void onDestroy() {
+        super.onDestroy();
+        loginPresener.onViewDestory();
     }
 
     @Override
     public void showToast(String msg) {
         Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void goBack(UserInfoBean userInfoBean) {
+        finish();
     }
 }

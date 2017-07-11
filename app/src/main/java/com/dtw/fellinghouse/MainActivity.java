@@ -15,11 +15,16 @@ import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.dtw.fellinghouse.Presener.WXSharePresener;
 import com.dtw.fellinghouse.View.BaseActivity;
 import com.dtw.fellinghouse.View.Chart.ChartActivity;
 import com.dtw.fellinghouse.View.Login.LoginActivity;
+import com.dtw.fellinghouse.View.Setting.SettingActivity;
+import com.dtw.fellinghouse.View.Setting.SettingView;
+import com.umeng.analytics.MobclickAgent;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private WXSharePresener wxSharePresener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        MobclickAgent.setCheckDevice(false);
+        wxSharePresener=new WXSharePresener(this);
     }
 
     @Override
@@ -49,27 +57,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//         //Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.main, menu);
+//        return true;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -77,26 +85,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_login) {
-            // Handle the camera action
-            if (getClass().getName() != LoginActivity.class.getName()) {
-                Intent intent = new Intent(this, LoginActivity.class);
-                startActivity(intent);
-            }
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_chart) {
-            if (getClass().getName() != ChartActivity.class.getName()) {
-                Intent intent = new Intent(this, ChartActivity.class);
-                startActivity(intent);
-            }
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        switch (item.getItemId()) {
+            case R.id.nav_login:
+                Intent login = new Intent(this, LoginActivity.class);
+                startActivity(login);
+                break;
+            case R.id.nav_gallery:
+                break;
+            case R.id.nav_slideshow:
+                break;
+            case R.id.nav_chart:
+                Intent chart = new Intent(this, ChartActivity.class);
+                startActivity(chart);
+                break;
+            case R.id.nav_share:
+                wxSharePresener.sendWebMsg(Config.WXSceneSession,"market://details?id=" + getPackageName());
+//                wxSharePresener.sendTextMsg(Config.WXSceneSession,"hello","love");
+                break;
+            case R.id.nav_setting:
+                Intent setting = new Intent(this, SettingActivity.class);
+                startActivity(setting);
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

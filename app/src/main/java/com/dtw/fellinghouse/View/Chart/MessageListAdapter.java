@@ -1,7 +1,9 @@
 package com.dtw.fellinghouse.View.Chart;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.dtw.fellinghouse.R;
+import com.dtw.fellinghouse.Utils.ScreenUtil;
 
 import java.util.List;
 
 import cn.jpush.im.android.api.content.ImageContent;
 import cn.jpush.im.android.api.content.TextContent;
-import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
 
 /**
@@ -26,7 +29,7 @@ import cn.jpush.im.android.api.model.Message;
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MessageViewHolder> {
     private Context context;
     private List<Message> messageList;
-    private OnMessageClickListener onMessageClickListener;
+    private SimpleOnRecycleItemClickListener simpleOnRecycleItemClickListener;
     public final int TYPE_SEND = 10;
     public final int TYPE_RECEIVE = 20;
 
@@ -35,8 +38,8 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         this.messageList = messageList;
     }
 
-    public void setOnMessageClickListener(OnMessageClickListener onMessageClickListener){
-        this.onMessageClickListener=onMessageClickListener;
+    public void setSimpleOnRecycleItemClickListener(SimpleOnRecycleItemClickListener simpleOnRecycleItemClickListener){
+        this.simpleOnRecycleItemClickListener = simpleOnRecycleItemClickListener;
     }
 
     @Override
@@ -56,13 +59,13 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         View itemView;
         switch (viewType) {
             case TYPE_RECEIVE:
-                itemView = LayoutInflater.from(context).inflate(R.layout.message_item_receive, parent, false);
+                itemView = LayoutInflater.from(context).inflate(R.layout.item_message_receive, parent, false);
                 break;
             case TYPE_SEND:
-                itemView = LayoutInflater.from(context).inflate(R.layout.message_item_send, parent, false);
+                itemView = LayoutInflater.from(context).inflate(R.layout.item_message_send, parent, false);
                 break;
             default:
-                itemView = LayoutInflater.from(context).inflate(R.layout.message_item_receive, parent, false);
+                itemView = LayoutInflater.from(context).inflate(R.layout.item_message_receive, parent, false);
                 break;
         }
         return new MessageViewHolder(itemView);
@@ -74,13 +77,29 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         switch (message.getContentType()){
             case text:
                 holder.text.setText(((TextContent)message.getContent()).getText());
+                hideItem(holder);
                 holder.text.setVisibility(View.VISIBLE);
                 break;
             case image:
+                int w,h;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(((ImageContent)message.getContent()).getLocalThumbnailPath(), options);
+                if(options.outWidth> ScreenUtil.dip2px(context,150)){
+                    w=ScreenUtil.dip2px(context,150);
+                    h=options.outHeight* ScreenUtil.dip2px(context,150)/options.outWidth;
+                }else{
+                    w=options.outWidth;
+                    h=options.outHeight;
+                }
                 Glide.with(context)
-                        .load(((ImageContent)message.getContent()).getImg_link())
+                        .load(((ImageContent)message.getContent()).getLocalThumbnailPath())
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                        .override(w,h)
                         .into(holder.img);
+                hideItem(holder);
                 holder.img.setVisibility(View.VISIBLE);
+                Log.v("dtw","imgmessage:"+message.toString());
                 break;
             case voice:
                 break;
@@ -105,11 +124,17 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             messageContent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(onMessageClickListener!=null){
-                        onMessageClickListener.onClick(v,getAdapterPosition());
+                    if(simpleOnRecycleItemClickListener !=null){
+                        simpleOnRecycleItemClickListener.onRecycleItemClick(MessageListAdapter.class.getName(),v,getAdapterPosition());
                     }
                 }
             });
         }
+    }
+
+    private void hideItem(MessageViewHolder holder){
+        holder.text.setVisibility(View.GONE);
+        holder.img.setVisibility(View.GONE);
+        holder.voice.setVisibility(View.GONE);
     }
 }

@@ -54,3 +54,32 @@
 -keep class com.mob.**{*;}
 -dontwarn cn.smssdk.**
 -keep class cn.smssdk.**{*;}
+
+#友盟
+-keepclassmembers class * {
+   public <init> (org.json.JSONObject);
+}
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+#-keep public class [您的应用包名].R$*{#在运行时会提示"NoSuchMethod"错误时 打开这段注释
+#public static final int *;
+#}
+
+#Mob
+-keep class cn.smssdk.**{*;}
+-keep class com.mob.**{*;}
+-dontwarn com.mob.**
+-dontwarn cn.smssdk.**
+
+#微信
+-keep class com.tencent.mm.opensdk.** {
+   *;
+}
+-keep class com.tencent.wxop.** {
+   *;
+}
+-keep class com.tencent.mm.sdk.** {
+   *;
+}

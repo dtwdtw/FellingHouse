@@ -5,6 +5,6 @@ package com.dtw.fellinghouse.Model;
  */
 
 public interface MobListener {
-    void onCodeSendSuccess();
-    void onCodeVerified();
+    void onSuccess(int code,String msg);
+    void onFail(int code,String msg);
 }

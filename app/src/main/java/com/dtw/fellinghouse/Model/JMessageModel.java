@@ -2,18 +2,20 @@ package com.dtw.fellinghouse.Model;
 
 import android.content.Context;
 import android.content.Intent;
-import android.widget.TextView;
+import android.util.Log;
 
+import com.dtw.fellinghouse.Config;
 import com.dtw.fellinghouse.View.Chart.ChartActivity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
+import cn.jpush.im.api.BasicCallback;
 
 /**
  * Created by Administrator on 2017/6/26 0026.
@@ -22,7 +24,6 @@ import cn.jpush.im.android.api.model.Message;
 public class JMessageModel {
     private static JMessageModel jMessageModel;
     private JMessageListener jMessageListener;
-    private List<Message> messageList = new ArrayList<>();
     private Context context;
 
     private JMessageModel(Context context) {
@@ -42,15 +43,81 @@ public class JMessageModel {
         this.jMessageListener = jMessageListener;
     }
 
-    public void sendTextMesage(String targetName, String textMessage) {
+    public void regist(String phoneNum, String password, final BaseCallBack baseCallBack){
+        JMessageClient.register(phoneNum, password, new BasicCallback() {
+            @Override
+            public void gotResult(int i, String s) {
+                baseCallBack.onResult(i,s);
+            }
+        });
+    }
+
+    public void login(String phoneNum, String password, final BaseCallBack baseCallBack){
+        JMessageClient.login(phoneNum, password, new BasicCallback() {
+            @Override
+            public void gotResult(int i, String s) {
+                baseCallBack.onResult(i,s);
+            }
+        });
+    }
+
+    public void logout(){
+        JMessageClient.logout();
+    }
+
+    public void enterConversation(String name){
+        JMessageClient.enterSingleConversation(name);
+    }
+
+    public void exitConversation(){
+        JMessageClient.exitConversation();
+    }
+
+    public Message sendTextMesage(String targetName, String textMessage) {
         Conversation conversation = Conversation.createSingleConversation(targetName);
         Message message = conversation.createSendTextMessage(textMessage);
         JMessageClient.sendMessage(message);
+        return message;
+    }
+
+    public Message sendImageMessage(String targetName, File imageMessage) {
+        Conversation conversation = Conversation.createSingleConversation(targetName);
+        Message message = null;
+        try {
+            message = conversation.createSendImageMessage(imageMessage);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        JMessageClient.sendMessage(message);
+        Log.v("dtw",message.toString());
+        return message;
     }
 
     public void getSingleConversation(String targetName) {
-        Conversation conversation = JMessageClient.getSingleConversation(targetName);
+        Conversation conversation = Conversation.createSingleConversation(targetName);
         jMessageListener.onMessage(conversation.getAllMessage());
+    }
+
+    public void deleteConversation(String targetName){
+        JMessageClient.deleteSingleConversation(targetName);
+    }
+
+    public void setNotifyFlag(int flag){
+        switch(flag){
+            case Config.NotifyDefault:
+                JMessageClient.setNotificationFlag(JMessageClient.FLAG_NOTIFY_DEFAULT);
+                break;
+            case Config.NotifyDisEnable:
+                JMessageClient.setNotificationFlag(JMessageClient.FLAG_NOTIFY_DISABLE);
+                break;
+            case Config.NotifySilence:
+                JMessageClient.setNotificationFlag(JMessageClient.FLAG_NOTIFY_SILENCE);
+                break;
+        }
+    }
+
+    public int getNotifyFlag(){
+        return JMessageClient.getNotificationFlag();
     }
 
     public void onEventMainThread(MessageEvent event) {
@@ -62,6 +129,10 @@ public class JMessageModel {
     public void onEventMainThread(NotificationClickEvent event) {
         Intent intent = new Intent(context, ChartActivity.class);
         context.startActivity(intent);//自定义跳转到指定页面
+    }
+
+    public interface BaseCallBack{
+        void onResult(int code,String msg);
     }
 
 }
