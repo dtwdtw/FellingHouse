@@ -1,4 +1,4 @@
-package com.dtw.fellinghouse.View.Chart;
+package com.dtw.fellinghouse.View;
 
 import android.view.View;
 
@@ -8,4 +8,5 @@ import android.view.View;
 
 public interface SimpleOnRecycleItemClickListener {
     void onRecycleItemClick(String adapterClassName,View v,int position);
+    void onRecycleItemLongClick(String adapterClassName,View v,int position);
 }

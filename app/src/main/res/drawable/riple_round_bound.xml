@@ -4,8 +4,8 @@
     android:color="@color/colorPrimaryDark">
     <item android:state_pressed="true">
             <shape>
-                <solid android:color="@color/colorTranstarentPrimary"></solid>
-                <stroke android:color="@color/colorhint" android:width="2dp"></stroke>
+                <solid android:color="@android:color/white"></solid>
+                <!--<stroke android:color="@color/colorhint" android:width="2dp"></stroke>-->
                 <corners android:radius="30dp"></corners>
             </shape>
     </item>
@@ -13,7 +13,7 @@
         <item>
             <shape>
                 <!--<solid android:color="@color/colorPrimaryDark"></solid>-->
-                <stroke android:color="@color/colorhint" android:width="2dp"></stroke>
+                <!--<stroke android:color="@color/colorhint" android:width="2dp"></stroke>-->
                 <corners android:radius="30dp"></corners>
             </shape>
         </item>

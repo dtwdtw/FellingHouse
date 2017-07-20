@@ -64,13 +64,18 @@ dependencies {
     compile 'cn.jiguang.sdk:jcore:1.1.2'
     compile 'cn.jiguang.sdk:jmessage:2.2.0'
     //Glide
-    compile 'com.github.bumptech.glide:glide:3.7.0'
+//    compile 'com.github.bumptech.glide:glide:3.7.0'
+    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
     //Mob
-    compile name:'SMSSDK-3.0.0',ext:'aar'
+    compile name: 'SMSSDK-3.0.0', ext: 'aar'
     //友盟应用统计
     compile 'com.umeng.analytics:analytics:latest.integration'
     //微信分享
-    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+//    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     //自由落体
     compile 'com.github.Jawnnypoo:PhysicsLayout:2.1.0'
+    //七牛
+    compile 'com.qiniu:qiniu-java-sdk:7.2.+'
+    //轮播图
+    compile 'com.youth.banner:banner:1.4.9'
 }

@@ -40,6 +40,7 @@
 -dontwarn com.google.**
 -keep class com.google.gson.** {*;}
 -keep class com.google.protobuf.** {*;}
+-keep class com.dtw.fellinghouse.Bean.** {*;}
 
 #Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
@@ -74,12 +75,14 @@
 -dontwarn cn.smssdk.**
 
 #微信
--keep class com.tencent.mm.opensdk.** {
-   *;
-}
--keep class com.tencent.wxop.** {
-   *;
-}
--keep class com.tencent.mm.sdk.** {
-   *;
-}
+-keep class com.tencent.mm.opensdk.** {*;}
+-keep class com.tencent.wxop.** {*;}
+-keep class com.tencent.mm.sdk.** {*;}
+
+#七牛
+-keep class com.qiniu.**{*;}
+-keep class com.qiniu.**{public <init>();}
+-ignorewarnings
+
+# banner 的混淆代码
+-keep class com.youth.banner.** {*;}

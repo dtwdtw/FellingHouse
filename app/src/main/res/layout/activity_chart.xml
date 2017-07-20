@@ -38,7 +38,7 @@
                 android:id="@+id/imgbtn_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/riple_boderless"
+                android:background="@drawable/ripple_boderless"
                 android:onClick="onClick"
                 android:padding="5dp"
                 android:src="@drawable/send_btn"
@@ -48,7 +48,7 @@
                 android:id="@+id/imgbtn_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/riple_boderless"
+                android:background="@drawable/ripple_boderless"
                 android:onClick="onClick"
                 android:padding="5dp"
                 android:src="@drawable/more" />

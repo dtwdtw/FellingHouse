@@ -13,8 +13,10 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.dtw.fellinghouse.R;
 import com.dtw.fellinghouse.Utils.ScreenUtil;
+import com.dtw.fellinghouse.View.SimpleOnRecycleItemClickListener;
 
 import java.util.List;
 
@@ -82,20 +84,22 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 break;
             case image:
                 int w,h;
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(((ImageContent)message.getContent()).getLocalThumbnailPath(), options);
-                if(options.outWidth> ScreenUtil.dip2px(context,150)){
+                BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+                bitmapOptions.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(((ImageContent)message.getContent()).getLocalThumbnailPath(), bitmapOptions);
+                if(bitmapOptions.outWidth> ScreenUtil.dip2px(context,150)){
                     w=ScreenUtil.dip2px(context,150);
-                    h=options.outHeight* ScreenUtil.dip2px(context,150)/options.outWidth;
+                    h=bitmapOptions.outHeight* ScreenUtil.dip2px(context,150)/bitmapOptions.outWidth;
                 }else{
-                    w=options.outWidth;
-                    h=options.outHeight;
+                    w=bitmapOptions.outWidth;
+                    h=bitmapOptions.outHeight;
                 }
+                RequestOptions glideOptions = new RequestOptions()
+                        .override(w,h)
+                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
                 Glide.with(context)
                         .load(((ImageContent)message.getContent()).getLocalThumbnailPath())
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                        .override(w,h)
+                        .apply(glideOptions)
                         .into(holder.img);
                 hideItem(holder);
                 holder.img.setVisibility(View.VISIBLE);

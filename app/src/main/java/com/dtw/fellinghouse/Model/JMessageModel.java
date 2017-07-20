@@ -11,10 +11,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import cn.jpush.im.android.api.JMessageClient;
+import cn.jpush.im.android.api.callback.GetUserInfoCallback;
 import cn.jpush.im.android.api.event.MessageEvent;
 import cn.jpush.im.android.api.event.NotificationClickEvent;
 import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
+import cn.jpush.im.android.api.model.UserInfo;
 import cn.jpush.im.api.BasicCallback;
 
 /**
@@ -43,33 +45,63 @@ public class JMessageModel {
         this.jMessageListener = jMessageListener;
     }
 
-    public void regist(String phoneNum, String password, final BaseCallBack baseCallBack){
+    public void regist(String phoneNum, String password, final BaseCallBack baseCallBack) {
         JMessageClient.register(phoneNum, password, new BasicCallback() {
             @Override
             public void gotResult(int i, String s) {
-                baseCallBack.onResult(i,s);
+                baseCallBack.onResult(i, s);
             }
         });
     }
 
-    public void login(String phoneNum, String password, final BaseCallBack baseCallBack){
+    public void login(String phoneNum, String password, final BaseCallBack baseCallBack) {
         JMessageClient.login(phoneNum, password, new BasicCallback() {
             @Override
             public void gotResult(int i, String s) {
-                baseCallBack.onResult(i,s);
+                baseCallBack.onResult(i, s);
             }
         });
     }
 
-    public void logout(){
+    public UserInfo getMyInfo() {
+        return JMessageClient.getMyInfo();
+    }
+
+    public void getUserInfo(String name, final BaseCallBack baseCallBack) {
+        JMessageClient.getUserInfo(name, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int i, String s, UserInfo userInfo) {
+
+            }
+        });
+    }
+
+    public void setUserAdmin(UserInfo userInfo, boolean isAdmin, final BaseCallBack baseCallBack) {
+        if (isAdmin) {
+            userInfo.updateNoteText(Config.Key_Admin, new BasicCallback() {
+                @Override
+                public void gotResult(int i, String s) {
+                    baseCallBack.onResult(i, s);
+                }
+            });
+        } else {userInfo.updateNoteText("", new BasicCallback() {
+            @Override
+            public void gotResult(int i, String s) {
+                baseCallBack.onResult(i, s);
+            }
+        });
+        }
+    }
+
+    public void logout() {
         JMessageClient.logout();
     }
 
-    public void enterConversation(String name){
+    public void enterConversation(String name) {
         JMessageClient.enterSingleConversation(name);
     }
 
-    public void exitConversation(){
+    public void exitConversation() {
         JMessageClient.exitConversation();
     }
 
@@ -89,7 +121,7 @@ public class JMessageModel {
             e.printStackTrace();
         }
         JMessageClient.sendMessage(message);
-        Log.v("dtw",message.toString());
+        Log.v("dtw", message.toString());
         return message;
     }
 
@@ -98,12 +130,12 @@ public class JMessageModel {
         jMessageListener.onMessage(conversation.getAllMessage());
     }
 
-    public void deleteConversation(String targetName){
+    public void deleteConversation(String targetName) {
         JMessageClient.deleteSingleConversation(targetName);
     }
 
-    public void setNotifyFlag(int flag){
-        switch(flag){
+    public void setNotifyFlag(int flag) {
+        switch (flag) {
             case Config.NotifyDefault:
                 JMessageClient.setNotificationFlag(JMessageClient.FLAG_NOTIFY_DEFAULT);
                 break;
@@ -116,7 +148,7 @@ public class JMessageModel {
         }
     }
 
-    public int getNotifyFlag(){
+    public int getNotifyFlag() {
         return JMessageClient.getNotificationFlag();
     }
 
@@ -131,8 +163,8 @@ public class JMessageModel {
         context.startActivity(intent);//自定义跳转到指定页面
     }
 
-    public interface BaseCallBack{
-        void onResult(int code,String msg);
+    public interface BaseCallBack {
+        void onResult(int code, String msg);
     }
 
 }

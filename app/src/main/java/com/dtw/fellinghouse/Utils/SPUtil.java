@@ -6,6 +6,7 @@ package com.dtw.fellinghouse.Utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 
 import com.dtw.fellinghouse.Config;
 
@@ -34,10 +35,17 @@ public class SPUtil {
     }
     public void setKeyBoardHeight(int height){
         SharedPreferences.Editor editor=sharedPreferences.edit();
-        editor.putInt(Config.Key_KeyBoardHeight,height).commit();
+        editor.putInt(Config.Key_SP_KeyBoardHeight,height).commit();
     }
     public int getKeyBoardHeight(){
-        return sharedPreferences.getInt(Config.Key_KeyBoardHeight,-1);
+        return sharedPreferences.getInt(Config.Key_SP_KeyBoardHeight,-1);
+    }
+    public void setDataUpdateTime(){
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putLong(Config.Key_SP_Data_Update_Time, System.currentTimeMillis()).commit();
+    }
+    public long getDataUpdateTime(){
+        return sharedPreferences.getLong(Config.Key_SP_Data_Update_Time,-1);
     }
 }
 

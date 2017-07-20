@@ -6,8 +6,8 @@
             android:id="@+id/nav_login"
             android:title="Login" />
         <item
-            android:id="@+id/nav_gallery"
-            android:title="Gallery" />
+            android:id="@+id/nav_add"
+            android:title="Add" />
         <item
             android:id="@+id/nav_slideshow"
             android:title="Slideshow" />

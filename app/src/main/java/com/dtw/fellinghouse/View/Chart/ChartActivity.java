@@ -1,14 +1,7 @@
 package com.dtw.fellinghouse.View.Chart;
 
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Path;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,11 +14,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.dtw.fellinghouse.Bean.KeyBoardMoreItemBean;
@@ -35,30 +26,19 @@ import com.dtw.fellinghouse.R;
 import com.dtw.fellinghouse.Utils.SPUtil;
 import com.dtw.fellinghouse.Utils.UriUtil;
 import com.dtw.fellinghouse.View.BaseActivity;
-import com.jawnnypoo.physicslayout.Physics;
-import com.jawnnypoo.physicslayout.PhysicsLinearLayout;
+import com.dtw.fellinghouse.View.SimpleOnRecycleItemClickListener;
 
-import org.jbox2d.dynamics.World;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.jpush.im.android.api.model.Message;
 
-import static android.R.attr.path;
-
 /**
  * Created by Administrator on 2017/6/23 0023.
  */
 
-public class ChartActivity extends BaseActivity implements ChartView ,SoftKeyBoardListener.OnSoftKeyBoardChangeListener,SimpleOnRecycleItemClickListener{
+public class ChartActivity extends BaseActivity implements ChartView ,SoftKeyBoardListener.OnSoftKeyBoardChangeListener,SimpleOnRecycleItemClickListener {
     private List<Message> messageListMain = new ArrayList<>();
     private List<KeyBoardMoreItemBean> keyBoardMoreItemBeanList=new ArrayList<>();
     private RecyclerView recyclerView,keyBoardMoreRV;
@@ -69,7 +49,6 @@ public class ChartActivity extends BaseActivity implements ChartView ,SoftKeyBoa
     private boolean isKeyboardShow=false;
     private boolean isMoreRVShow=false;
     private InputMethodManager imm;
-    private PhysicsLinearLayout messagePhysical;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,7 +63,6 @@ public class ChartActivity extends BaseActivity implements ChartView ,SoftKeyBoa
         msgEdit = (EditText) findViewById(R.id.edit_text);
         sendImgBtn = (ImageButton) findViewById(R.id.imgbtn_send);
         moreImgBtn = (ImageButton) findViewById(R.id.imgbtn_more);
-        messagePhysical= (PhysicsLinearLayout) findViewById(R.id.physical_message);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new RecycleViewItemDecoration());
@@ -204,7 +182,6 @@ public class ChartActivity extends BaseActivity implements ChartView ,SoftKeyBoa
                 finish();
                 break;
             case R.id.delete_conversation:
-                movieChild(recyclerView,messagePhysical);
                 messageListMain.clear();
                 chartPresener.deleteConversation(Config.MasterName);
                 messageListAdapter.notifyDataSetChanged();
@@ -281,7 +258,8 @@ public class ChartActivity extends BaseActivity implements ChartView ,SoftKeyBoa
         }
     }
 
-    private void movieChild(ViewGroup parentFrom,ViewGroup parentTo){
+    @Override
+    public void onRecycleItemLongClick(String adapterClassName, View v, int position) {
 
     }
 
