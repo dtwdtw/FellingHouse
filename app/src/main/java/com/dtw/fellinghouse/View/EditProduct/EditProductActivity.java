@@ -1,4 +1,4 @@
-package com.dtw.fellinghouse.View.AddProduct;
+package com.dtw.fellinghouse.View.EditProduct;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -20,11 +20,11 @@ import android.widget.Toast;
 import com.dtw.fellinghouse.Bean.MainDataBean;
 import com.dtw.fellinghouse.Bean.ProductBean;
 import com.dtw.fellinghouse.Config;
-import com.dtw.fellinghouse.Presener.AddProductPresener;
+import com.dtw.fellinghouse.Model.QiNiuModel;
+import com.dtw.fellinghouse.Presener.EditProductPresener;
 import com.dtw.fellinghouse.R;
-import com.dtw.fellinghouse.View.BaseActivity;
+import com.dtw.fellinghouse.View.*;
 import com.dtw.fellinghouse.View.ImageRecycleAdapter;
-import com.dtw.fellinghouse.View.SimpleOnRecycleItemClickListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,45 +34,73 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Administrator on 2017/7/20 0020.
+ * Created by Administrator on 2017/7/21 0021.
  */
 
-public class AddProductActivity extends BaseActivity implements SimpleOnRecycleItemClickListener, AddProductView {
-    private AddProductPresener addProductPresener;
+public class EditProductActivity extends BaseActivity implements EditProductView, SimpleOnRecycleItemClickListener {
+    private EditProductPresener editProductPresener;
     private RecyclerView productImageListRecycle;
-    private ImageRecycleAdapter imageRecycleAdapter;
+    private com.dtw.fellinghouse.View.ImageRecycleAdapter imageRecycleAdapter;
+    private List<String> imgNameList=new ArrayList<>();
     private List<String> uriList = new ArrayList<>();
-    private EditText productName, productDescripe, onerName, onerPhone, onerID, originalStartTime, originalEndTime, onerDescripe,originalPrice;
+    private List<String> mixImgList=new ArrayList<>();
+    private EditText productName, productDescripe, onerName, onerPhone, onerID, originalStartTime, originalEndTime, originalPrice,onerDescripe,priceDay,priceWeek,priceMonth,priceDecoration;
     private MainDataBean mainDataBean;
+    private ProductBean editProduct;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_product);
+        setContentView(R.layout.activity_edit_product);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        addProductPresener = new AddProductPresener(this, this);
+        editProductPresener = new EditProductPresener(this, this);
 
         productName = (EditText) findViewById(R.id.edittext_name);
         productDescripe = (EditText) findViewById(R.id.edittext_descripe);
         originalStartTime = (EditText) findViewById(R.id.edittext_original_starttime);
         originalEndTime = (EditText) findViewById(R.id.edittext_original_endtime);
+        originalPrice= (EditText) findViewById(R.id.edittext_original_price);
         onerName = (EditText) findViewById(R.id.edittext_oner_name);
         onerPhone = (EditText) findViewById(R.id.edittext_oner_phone);
         onerID = (EditText) findViewById(R.id.edittext_oner_id);
         onerDescripe = (EditText) findViewById(R.id.edittext_oner_descripe);
-        originalPrice= (EditText) findViewById(R.id.edittext_original_price);
+        priceDay= (EditText) findViewById(R.id.edittext_price_day);
+        priceWeek= (EditText) findViewById(R.id.edittext_price_week);
+        priceMonth= (EditText) findViewById(R.id.edittext_price_month);
+        priceDecoration= (EditText) findViewById(R.id.edittext_decoration_price);
 
         productImageListRecycle = (RecyclerView) findViewById(R.id.recycle_product_img_list);
         productImageListRecycle.setLayoutManager(new StaggeredGridLayoutManager(4, RecyclerView.VERTICAL));
-        imageRecycleAdapter = new ImageRecycleAdapter(this, uriList);
+        imageRecycleAdapter = new ImageRecycleAdapter(this, mixImgList);
         imageRecycleAdapter.setFootImageResource(R.drawable.icon_add_pic);
         imageRecycleAdapter.setSimpleOnRecycleItemClickListener(this);
         productImageListRecycle.setAdapter(imageRecycleAdapter);
 
         mainDataBean = getIntent().getParcelableExtra(Config.Key_Main_Product);
+        editProduct=getIntent().getParcelableExtra(Config.Key_Product);
+        setTitle(editProduct.getName());
+
+        productName.setText(editProduct.getName());
+        productDescripe.setText(editProduct.getDescripe());
+        originalPrice.setText(String.valueOf(editProduct.getPriceOriginal()));
+        originalStartTime.setText(editProduct.getOriginalStartTime());
+        originalEndTime.setText(editProduct.getOriginalEndTime());
+        onerName.setText(editProduct.getOnerName());
+        onerPhone.setText(editProduct.getOnerPhone());
+        onerID.setText(editProduct.getOnerID());
+        onerDescripe.setText(editProduct.getOnerDescripe());
+        priceDay.setText(String.valueOf(editProduct.getPriceDay()));
+        priceWeek.setText(String.valueOf(editProduct.getPriceWeek()));
+        priceMonth.setText(String.valueOf(editProduct.getPriceMonth()));
+        priceDecoration.setText(String.valueOf(editProduct.getPriceDecoration()));
+        imgNameList=editProduct.getProductImgNameList();
+        for(int i=0;i<imgNameList.size();i++){
+            mixImgList.add(QiNiuModel.getInstance().getPublicUrl(imgNameList.get(i)));
+        }
+        imageRecycleAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -81,8 +109,9 @@ public class AddProductActivity extends BaseActivity implements SimpleOnRecycleI
         if (requestCode == Config.Request_Code_Request_Image) {
             if (resultCode == RESULT_OK) {
                 uriList.add(data.getData().toString());
-                imageRecycleAdapter.notifyItemInserted(uriList.size() - 1);
-                productImageListRecycle.scrollToPosition(uriList.size());
+                mixImgList.add(data.getData().toString());
+                imageRecycleAdapter.notifyItemInserted(mixImgList.size() - 1);
+                productImageListRecycle.scrollToPosition(mixImgList.size());
                 Log.v("dtw", "uri:" + data.getData());
             }
         }
@@ -103,7 +132,7 @@ public class AddProductActivity extends BaseActivity implements SimpleOnRecycleI
                 final AlertDialog alertDialogStart = builderStart.show();
                 Calendar calendarStart = Calendar.getInstance();
                 if (!TextUtils.isEmpty(originalStartTime.getText())) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-d");
                     try {
                         Date date = simpleDateFormat.parse(originalStartTime.getText().toString());
                         calendarStart.setTime(date);
@@ -128,7 +157,7 @@ public class AddProductActivity extends BaseActivity implements SimpleOnRecycleI
                 final AlertDialog alertDialogEnd = builderEnd.show();
                 Calendar calendarEnd = Calendar.getInstance();
                 if (!TextUtils.isEmpty(originalEndTime.getText())) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-M-d");
                     try {
                         Date date = simpleDateFormat.parse(originalEndTime.getText().toString());
                         calendarEnd.setTime(date);
@@ -152,7 +181,7 @@ public class AddProductActivity extends BaseActivity implements SimpleOnRecycleI
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.add_product_menu, menu);
+        getMenuInflater().inflate(R.menu.edit_product_menu, menu);
         return true;
     }
 
@@ -165,27 +194,41 @@ public class AddProductActivity extends BaseActivity implements SimpleOnRecycleI
             case R.id.menu_down:
                 Log.v("dtw", "menu down click");
                 ProductBean productBeanWithOutImageList = new ProductBean();
-                mainDataBean.setLastID(mainDataBean.getLastID()+1);
-                productBeanWithOutImageList.setId(mainDataBean.getLastID());
+                productBeanWithOutImageList.setId(editProduct.getId());
                 productBeanWithOutImageList.setName(productName.getText().toString());
                 productBeanWithOutImageList.setDescripe(productDescripe.getText().toString());
+                productBeanWithOutImageList.setPriceOriginal(Long.parseLong(originalPrice.getText().toString()));
                 productBeanWithOutImageList.setOriginalStartTime(originalStartTime.getText().toString());
                 productBeanWithOutImageList.setOriginalEndTime(originalEndTime.getText().toString());
                 productBeanWithOutImageList.setOnerName(onerName.getText().toString());
                 productBeanWithOutImageList.setOnerPhone(onerPhone.getText().toString());
                 productBeanWithOutImageList.setOnerID(onerID.getText().toString());
                 productBeanWithOutImageList.setOnerDescripe(onerDescripe.getText().toString());
-                productBeanWithOutImageList.setPriceOriginal(Long.valueOf(TextUtils.isEmpty(originalPrice.getText().toString())?"0":originalPrice.getText().toString()));
-                productBeanWithOutImageList.setCreateTime(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
-                addProductPresener.insertProduct(mainDataBean, productBeanWithOutImageList, uriList);
+                productBeanWithOutImageList.setPriceDay(Long.parseLong(priceDay.getText().toString()));
+                productBeanWithOutImageList.setPriceWeek(Long.parseLong(priceWeek.getText().toString()));
+                productBeanWithOutImageList.setPriceMonth(Long.parseLong(priceMonth.getText().toString()));
+                productBeanWithOutImageList.setPriceDecoration(Long.parseLong(priceDecoration.getText().toString()));
+                productBeanWithOutImageList.setUpdateTime(new SimpleDateFormat("yyyy-MM-dd hh:mm;ss").format(new Date()));
+                productBeanWithOutImageList.setProductImgNameList(imgNameList);
+                for(int i=0;i<mainDataBean.getProductList().size();i++){
+                    if(mainDataBean.getProductList().get(i).getId()==editProduct.getId()){
+                        mainDataBean.getProductList().remove(i);
+                        break;
+                    }
+                }
+                editProductPresener.insertProduct(mainDataBean, productBeanWithOutImageList, uriList);
                 break;
+            case R.id.menu_delete:
+                editProductPresener.deleteProduct(mainDataBean,editProduct);
+                break;
+
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onRecycleItemClick(String adapterClassName, View v, int position) {
-        if (position == uriList.size()) {
+        if (position == mixImgList.size()) {
             Intent intent = new Intent(Intent.ACTION_PICK);
             intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -195,8 +238,13 @@ public class AddProductActivity extends BaseActivity implements SimpleOnRecycleI
 
     @Override
     public void onRecycleItemLongClick(String adapterClassName, View v, int position) {
-        if (position < uriList.size()) {
-            uriList.remove(position);
+        if (position < mixImgList.size()) {
+            if(position<imgNameList.size()){
+                imgNameList.remove(position);
+            }else if(position<uriList.size()){
+                uriList.remove(position-imgNameList.size());
+            }
+            mixImgList.remove(position);
             imageRecycleAdapter.notifyItemRemoved(position);
         }
     }

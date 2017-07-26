@@ -71,7 +71,7 @@ dependencies {
     //友盟应用统计
     compile 'com.umeng.analytics:analytics:latest.integration'
     //微信分享
-//    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
     //自由落体
     compile 'com.github.Jawnnypoo:PhysicsLayout:2.1.0'
     //七牛

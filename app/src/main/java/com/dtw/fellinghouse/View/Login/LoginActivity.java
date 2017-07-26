@@ -10,13 +10,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.dtw.fellinghouse.Bean.UserInfoBean;
 import com.dtw.fellinghouse.Config;
 import com.dtw.fellinghouse.Presener.LoginPresener;
 import com.dtw.fellinghouse.R;
+import com.dtw.fellinghouse.Utils.SPUtil;
 import com.dtw.fellinghouse.View.SmsCodeLogin.SmsCodeLoginActivity;
 import com.dtw.fellinghouse.View.BaseActivity;
 import com.dtw.fellinghouse.View.Regist.RegistActivity;
+
+import cn.jpush.im.android.api.model.UserInfo;
 
 /**
  * Created by Administrator on 2017/6/26 0026.
@@ -39,6 +41,9 @@ public class LoginActivity extends BaseActivity implements LoginView{
         phoneNum= (EditText) findViewById(R.id.edit_phone_num);
         password= (EditText) findViewById(R.id.edit_password);
         loginBtn= (Button) findViewById(R.id.btn_login);
+
+        phoneNum.setText(new SPUtil(this).getUserName());
+        password.setText(new SPUtil(this).getUserPassword());
 
         loginPresener=new LoginPresener(this,this);
     }
@@ -100,7 +105,17 @@ public class LoginActivity extends BaseActivity implements LoginView{
     }
 
     @Override
-    public void goBack(UserInfoBean userInfoBean) {
+    public void goBack(UserInfo userInfo) {
+        new SPUtil(this).setUserName(phoneNum.getText().toString());
+        new SPUtil(this).setUserPassword(password.getText().toString());
+
+        Intent intent = new Intent();
+        if(Config.Key_Admin.equals(userInfo.getSignature())) {
+            intent.putExtra(Config.Key_Admin,true);
+        }else{
+            intent.putExtra(Config.Key_Admin,false);
+        }
+        setResult(RESULT_OK, intent);
         finish();
     }
 }

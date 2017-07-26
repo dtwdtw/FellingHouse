@@ -2,6 +2,7 @@ package com.dtw.fellinghouse.View.Main;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,7 +81,8 @@ public class ProductStaggeredRecycleAdapter extends RecyclerView.Adapter<Product
                     if(simpleOnRecycleItemClickListener!=null){
                         simpleOnRecycleItemClickListener.onRecycleItemLongClick(ProductStaggeredRecycleAdapter.class.getName(),itemView,getAdapterPosition());
                     }
-                    return false;
+                    Log.v("dtw","item long click");
+                    return true;
                 }
             });
         }

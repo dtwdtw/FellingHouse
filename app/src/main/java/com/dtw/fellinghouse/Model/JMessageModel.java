@@ -27,10 +27,12 @@ public class JMessageModel {
     private static JMessageModel jMessageModel;
     private JMessageListener jMessageListener;
     private Context context;
+    private boolean chartActivityON=false;
 
     private JMessageModel(Context context) {
         this.context = context;
         JMessageClient.registerEventReceiver(this);
+        JMessageClient.setDebugMode(true);
         JMessageClient.init(context);
     }
 
@@ -45,63 +47,37 @@ public class JMessageModel {
         this.jMessageListener = jMessageListener;
     }
 
-    public void regist(String phoneNum, String password, final BaseCallBack baseCallBack) {
+    public void regist(String phoneNum, String password, final BaseCallBack baseCallBack){
         JMessageClient.register(phoneNum, password, new BasicCallback() {
             @Override
             public void gotResult(int i, String s) {
-                baseCallBack.onResult(i, s);
+                baseCallBack.onResult(i,s);
             }
         });
     }
 
-    public void login(String phoneNum, String password, final BaseCallBack baseCallBack) {
+    public void login(String phoneNum, String password, final BaseCallBack baseCallBack){
         JMessageClient.login(phoneNum, password, new BasicCallback() {
             @Override
             public void gotResult(int i, String s) {
-                baseCallBack.onResult(i, s);
+                baseCallBack.onResult(i,s);
             }
         });
     }
 
-    public UserInfo getMyInfo() {
-        return JMessageClient.getMyInfo();
+    public void setChartActivityON(boolean on){
+        chartActivityON=on;
     }
 
-    public void getUserInfo(String name, final BaseCallBack baseCallBack) {
-        JMessageClient.getUserInfo(name, new GetUserInfoCallback() {
-            @Override
-            public void gotResult(int i, String s, UserInfo userInfo) {
-
-            }
-        });
-    }
-
-    public void setUserAdmin(UserInfo userInfo, boolean isAdmin, final BaseCallBack baseCallBack) {
-        if (isAdmin) {
-            userInfo.updateNoteText(Config.Key_Admin, new BasicCallback() {
-                @Override
-                public void gotResult(int i, String s) {
-                    baseCallBack.onResult(i, s);
-                }
-            });
-        } else {userInfo.updateNoteText("", new BasicCallback() {
-            @Override
-            public void gotResult(int i, String s) {
-                baseCallBack.onResult(i, s);
-            }
-        });
-        }
-    }
-
-    public void logout() {
+    public void logout(){
         JMessageClient.logout();
     }
 
-    public void enterConversation(String name) {
+    public void enterConversation(String name){
         JMessageClient.enterSingleConversation(name);
     }
 
-    public void exitConversation() {
+    public void exitConversation(){
         JMessageClient.exitConversation();
     }
 
@@ -121,7 +97,7 @@ public class JMessageModel {
             e.printStackTrace();
         }
         JMessageClient.sendMessage(message);
-        Log.v("dtw", message.toString());
+        Log.v("dtw",message.toString());
         return message;
     }
 
@@ -130,12 +106,29 @@ public class JMessageModel {
         jMessageListener.onMessage(conversation.getAllMessage());
     }
 
-    public void deleteConversation(String targetName) {
+    public void getLocalConversation(){
+        jMessageListener.onLocalConversation(JMessageClient.getConversationList());
+    }
+
+    public void deleteConversation(String targetName){
         JMessageClient.deleteSingleConversation(targetName);
     }
 
-    public void setNotifyFlag(int flag) {
-        switch (flag) {
+    public UserInfo getMyInfo(){
+        return JMessageClient.getMyInfo();
+    }
+
+    public void getUserInfo(String name){
+        JMessageClient.getUserInfo(name, new GetUserInfoCallback() {
+            @Override
+            public void gotResult(int i, String s, UserInfo userInfo) {
+
+            }
+        });
+    }
+
+    public void setNotifyFlag(int flag){
+        switch(flag){
             case Config.NotifyDefault:
                 JMessageClient.setNotificationFlag(JMessageClient.FLAG_NOTIFY_DEFAULT);
                 break;
@@ -148,7 +141,7 @@ public class JMessageModel {
         }
     }
 
-    public int getNotifyFlag() {
+    public int getNotifyFlag(){
         return JMessageClient.getNotificationFlag();
     }
 
@@ -159,11 +152,15 @@ public class JMessageModel {
     }
 
     public void onEventMainThread(NotificationClickEvent event) {
-        Intent intent = new Intent(context, ChartActivity.class);
-        context.startActivity(intent);//自定义跳转到指定页面
+        if(!chartActivityON) {
+            Intent intent = new Intent(context, ChartActivity.class);
+            context.startActivity(intent);//自定义跳转到指定页面
+        }else{
+            jMessageListener.changeConversation(event.getMessage());
+        }
     }
 
-    public interface BaseCallBack {
+    public interface BaseCallBack{
         void onResult(int code, String msg);
     }
 

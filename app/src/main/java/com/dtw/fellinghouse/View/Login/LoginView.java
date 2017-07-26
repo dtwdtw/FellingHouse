@@ -1,6 +1,6 @@
 package com.dtw.fellinghouse.View.Login;
 
-import com.dtw.fellinghouse.Bean.UserInfoBean;
+import cn.jpush.im.android.api.model.UserInfo;
 
 /**
  * Created by Administrator on 2017/6/26 0026.
@@ -8,5 +8,5 @@ import com.dtw.fellinghouse.Bean.UserInfoBean;
 
 public interface LoginView {
     void showToast(String msg);
-    void goBack(UserInfoBean userInfoBean);
+    void goBack(UserInfo userInfo);
 }

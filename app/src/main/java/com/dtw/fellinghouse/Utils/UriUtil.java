@@ -50,7 +50,7 @@ public class UriUtil {
         BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
         bitmapOptions.inSampleSize = be;//设置缩放比例
         bitmapOptions.inDither = true;//optional
-        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
+        bitmapOptions.inPreferredConfig = Bitmap.Config.RGB_565;//optional
         input = context.getContentResolver().openInputStream(uri);
         Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
         input.close();
@@ -71,16 +71,17 @@ public class UriUtil {
     }
     private static ByteArrayOutputStream getBitmatByteOutPutStream(Context context,Bitmap bitmap){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 15, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
         Log.v("dtw",baos.size()+"");
-        int options = 100;
-        if(baos.toByteArray().length>1000*1024){
-            options=100000*1024/baos.toByteArray().length;
-        }
+//        int options = 75;
+//        int baoslength=baos.toByteArray().length;
+//        if(baoslength>300*1024){
+//            options=10000*1024/baoslength;
+//        }
 //        while (baos.toByteArray().length / 1024 > 1000) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
-        baos.reset();//重置baos即清空baos
+//        baos.reset();//重置baos即清空baos
         //第一个参数 ：图片格式 ，第二个参数： 图片质量，100为最高，0为最差  ，第三个参数：保存压缩后的数据的流
-        bitmap.compress(Bitmap.CompressFormat.PNG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
 //            options -= 10;//每次都减少10
 //        }
         return baos;

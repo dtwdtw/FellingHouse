@@ -44,8 +44,19 @@ public class SPUtil {
         SharedPreferences.Editor editor=sharedPreferences.edit();
         editor.putLong(Config.Key_SP_Data_Update_Time, System.currentTimeMillis()).commit();
     }
+    public void setDataUpdateTime(long timemillis){
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putLong(Config.Key_SP_Data_Update_Time, timemillis).commit();
+    }
     public long getDataUpdateTime(){
         return sharedPreferences.getLong(Config.Key_SP_Data_Update_Time,-1);
+    }
+    public void setLastChartUserName(String userName){
+        SharedPreferences.Editor editor=sharedPreferences.edit();
+        editor.putString(Config.Key_SP_LastChartUserName,userName).commit();
+    }
+    public String getLastChartUserName(){
+        return sharedPreferences.getString(Config.Key_SP_LastChartUserName,null);
     }
 }
 

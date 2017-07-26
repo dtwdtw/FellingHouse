@@ -11,4 +11,5 @@ import java.util.List;
 public interface MainView {
     <T>void onData(T data);
     void endRefreshing();
+    void showToast(String msg);
 }

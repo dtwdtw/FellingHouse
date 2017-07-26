@@ -2,9 +2,10 @@ package com.dtw.fellinghouse.Presener;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
-import com.dtw.fellinghouse.Bean.UserInfoBean;
 import com.dtw.fellinghouse.Model.JMessageModel;
+import com.dtw.fellinghouse.Utils.SPUtil;
 import com.dtw.fellinghouse.View.Login.LoginView;
 
 /**
@@ -21,13 +22,13 @@ public class LoginPresener{
         this.loginView=loginView;
         jMessageModel=JMessageModel.getInstance(context);
     }
-    public void login(String phoneNum,String password){
+    public void login(final String phoneNum, final String password){
         jMessageModel.login(phoneNum, password, new JMessageModel.BaseCallBack() {
             @Override
             public void onResult(int code, String msg) {
                 switch (code){
                     case 0:
-                        loginView.goBack(new UserInfoBean());
+                        loginView.goBack(jMessageModel.getMyInfo());
                         break;
                 }
             }

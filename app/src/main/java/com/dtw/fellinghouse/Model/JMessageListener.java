@@ -2,6 +2,7 @@ package com.dtw.fellinghouse.Model;
 
 import java.util.List;
 
+import cn.jpush.im.android.api.model.Conversation;
 import cn.jpush.im.android.api.model.Message;
 
 /**
@@ -11,4 +12,6 @@ import cn.jpush.im.android.api.model.Message;
 public interface JMessageListener {
     void onMessage(Message message);
     void onMessage(List<Message> messageList);
+    void onLocalConversation(List<Conversation> conversationList);
+    void changeConversation(Message message);
 }

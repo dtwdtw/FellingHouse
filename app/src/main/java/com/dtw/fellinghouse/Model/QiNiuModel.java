@@ -44,6 +44,9 @@ public class QiNiuModel {
     private String secretKey = "RDwROZoaiSaVjJzMyMZamdPWpYvlolxoVDGt9psM";
     private String bucket = "fellinghouseimage";
     private Configuration cfg = new Configuration(Zone.zone1());
+    public static final int TYPE_DELETE=1001;
+    public static final int TYPE_ADD=1002;
+    public static final int TYPE_EDIT=1003;
 
     private QiNiuModel() {
 
@@ -60,20 +63,20 @@ public class QiNiuModel {
         this.qiNiuListener = qiNiuListener;
     }
 
-    public void insert(String name, String value) {
-        upLoad(name, value, getInsertToken());
+    public void insert(int type,String name, String value) {
+        upLoad(type,name, value, getInsertToken());
     }
 
-    public void insert(String name, Bitmap bitmap) {
-        upLoad(name, bitmap, getInsertToken());
+    public void insert(int type,String name, Bitmap bitmap) {
+        upLoad(type,name, bitmap, getInsertToken());
     }
 
-    public void overWrite(String name, String value) {
-        upLoad(name, value, getOverWriteToken(name));
+    public void overWrite(int type,String name, String value) {
+        upLoad(type,name, value, getOverWriteToken(name));
     }
 
-    public void overWrite(String name, Bitmap bitmap) {
-        upLoad(name, bitmap, getOverWriteToken(name));
+    public void overWrite(int type,String name, Bitmap bitmap) {
+        upLoad(type,name, bitmap, getOverWriteToken(name));
     }
 
     private String getInsertToken() {
@@ -92,12 +95,14 @@ public class QiNiuModel {
         return auth.uploadToken(bucket, fileName, expireSeconds, putPolicy);
     }
 
-    private void upLoad(final String key, final Bitmap bitmap, final String token) {
+    private void upLoad(final int type,final String key, final Bitmap bitmap, final String token) {
         final Configuration cfg = new Configuration(Zone.zone1());
         final UploadManager uploadManager = new UploadManager(cfg);
         new Thread(new Runnable() {
             @Override
             public void run() {
+                String originalKey=key;
+                int type_up=type;
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
                 ByteArrayInputStream byteInputStream = new ByteArrayInputStream(baos.toByteArray());
@@ -106,34 +111,35 @@ public class QiNiuModel {
                     //解析上传成功的结果
                     QiNiuResultBean qiNiuResultBean = new Gson().fromJson(response.bodyString(), QiNiuResultBean.class);
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUpload(qiNiuResultBean);
+                        qiNiuListener.onUploadBitmap(type_up,originalKey,qiNiuResultBean);
                     }
                 } catch (QiniuException ex) {
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUploadError(ex.code(), ex.error());
+                        qiNiuListener.onUploadError(type_up,ex.code(), ex.error());
                     }
                 }
             }
         }).start();
     }
 
-    private void upLoad(String name, final String value, final String token) {
+    private void upLoad(final int type, final String name, final String value, final String token) {
         final UploadManager uploadManager = new UploadManager(cfg);
-        final String key = name;
         new Thread(new Runnable() {
             @Override
             public void run() {
+                String originalKey=name;
+                int type_up=type;
                 try {
-                    Response response = uploadManager.put(value.getBytes(), key, token);
+                    Response response = uploadManager.put(value.getBytes(), name, token);
                     //解析上传成功的结果
                     QiNiuResultBean qiNiuResultBean = new Gson().fromJson(response.bodyString(), QiNiuResultBean.class);
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUpload(qiNiuResultBean);
+                        qiNiuListener.onUploadString(type_up,originalKey,qiNiuResultBean);
                     }
                 } catch (QiniuException ex) {
                     ex.printStackTrace();
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUploadError(ex.code(), ex.error());
+                        qiNiuListener.onUploadError(type_up,ex.code(), ex.error());
                     }
                 }
             }

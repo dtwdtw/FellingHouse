@@ -7,6 +7,7 @@ import com.dtw.fellinghouse.Bean.QiNiuResultBean;
  */
 
 public interface QiNiuListener {
-    void onUpload(QiNiuResultBean qiNiuResultBean);
-    void onUploadError(int code,String msg);
+    void onUploadString(int type,String originalKey,QiNiuResultBean qiNiuResultBean);
+    void onUploadBitmap(int type,String originalKey,QiNiuResultBean qiNiuResultBean);
+    void onUploadError(int type,int code,String msg);
 }

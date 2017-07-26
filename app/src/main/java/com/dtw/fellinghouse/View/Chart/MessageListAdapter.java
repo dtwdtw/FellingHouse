@@ -84,18 +84,18 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 break;
             case image:
                 int w,h;
-                BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-                bitmapOptions.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(((ImageContent)message.getContent()).getLocalThumbnailPath(), bitmapOptions);
-                if(bitmapOptions.outWidth> ScreenUtil.dip2px(context,150)){
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(((ImageContent)message.getContent()).getLocalThumbnailPath(), options);
+                if(options.outWidth> ScreenUtil.dip2px(context,150)){
                     w=ScreenUtil.dip2px(context,150);
-                    h=bitmapOptions.outHeight* ScreenUtil.dip2px(context,150)/bitmapOptions.outWidth;
+                    h=options.outHeight* ScreenUtil.dip2px(context,150)/options.outWidth;
                 }else{
-                    w=bitmapOptions.outWidth;
-                    h=bitmapOptions.outHeight;
+                    w=options.outWidth;
+                    h=options.outHeight;
                 }
                 RequestOptions glideOptions = new RequestOptions()
-                        .override(w,h)
+                        .error(R.drawable.nav_head)
                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
                 Glide.with(context)
                         .load(((ImageContent)message.getContent()).getLocalThumbnailPath())
