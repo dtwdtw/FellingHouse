@@ -1,5 +1,6 @@
 package com.dtw.fellinghouse.View.AddProduct;
 
+import com.dtw.fellinghouse.Bean.LocationQQBean;
 import com.dtw.fellinghouse.Bean.QiNiuResultBean;
 
 /**
@@ -9,4 +10,5 @@ import com.dtw.fellinghouse.Bean.QiNiuResultBean;
 public interface AddProductView {
     void showToast(String msg);
     void finish();
+    void onLocationBean(LocationQQBean locationQQBean);
 }

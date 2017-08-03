@@ -39,7 +39,7 @@ public class EditProductPresener implements QiNiuListener {
         this.context = context;
         this.editProductView = editProductView;
         this.handler = new Handler();
-        this.qiNiuModel = qiNiuModel.getInstance();
+        this.qiNiuModel = new QiNiuModel();
         qiNiuModel.setQiNiuListener(this);
     }
 

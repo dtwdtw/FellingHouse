@@ -125,5 +125,13 @@
 
     </android.support.design.widget.TextInputLayout>
 
+    <Switch
+        android:id="@+id/switch_is_state_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="已有贵宾入住，或不可用"
+        android:layout_marginRight="5dp"
+        android:layout_gravity="right"/>
+
 
 </LinearLayout>

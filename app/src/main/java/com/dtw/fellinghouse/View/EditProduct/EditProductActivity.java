@@ -98,7 +98,7 @@ public class EditProductActivity extends BaseActivity implements EditProductView
         priceDecoration.setText(String.valueOf(editProduct.getPriceDecoration()));
         imgNameList=editProduct.getProductImgNameList();
         for(int i=0;i<imgNameList.size();i++){
-            mixImgList.add(QiNiuModel.getInstance().getPublicUrl(imgNameList.get(i)));
+            mixImgList.add(new QiNiuModel().getPublicUrl(imgNameList.get(i)));
         }
         imageRecycleAdapter.notifyDataSetChanged();
     }
@@ -208,6 +208,8 @@ public class EditProductActivity extends BaseActivity implements EditProductView
                 productBeanWithOutImageList.setPriceWeek(Long.parseLong(priceWeek.getText().toString()));
                 productBeanWithOutImageList.setPriceMonth(Long.parseLong(priceMonth.getText().toString()));
                 productBeanWithOutImageList.setPriceDecoration(Long.parseLong(priceDecoration.getText().toString()));
+                productBeanWithOutImageList.setLocationName(editProduct.getLocationName());
+                productBeanWithOutImageList.setState(editProduct.getState());
                 productBeanWithOutImageList.setUpdateTime(new SimpleDateFormat("yyyy-MM-dd hh:mm;ss").format(new Date()));
                 productBeanWithOutImageList.setProductImgNameList(imgNameList);
                 for(int i=0;i<mainDataBean.getProductList().size();i++){

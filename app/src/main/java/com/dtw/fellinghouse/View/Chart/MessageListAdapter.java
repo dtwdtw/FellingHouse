@@ -96,6 +96,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 }
                 RequestOptions glideOptions = new RequestOptions()
                         .error(R.drawable.nav_head)
+                        .override(w,h)
                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
                 Glide.with(context)
                         .load(((ImageContent)message.getContent()).getLocalThumbnailPath())

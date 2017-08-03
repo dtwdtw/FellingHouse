@@ -7,5 +7,5 @@ import java.util.List;
  */
 
 public interface NetListener {
-    <T>void onData(T dataList);
+    <T>void onData(T data);
 }

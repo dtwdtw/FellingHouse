@@ -61,6 +61,7 @@ public class JMessageModel {
             @Override
             public void gotResult(int i, String s) {
                 baseCallBack.onResult(i,s);
+                Log.v("dtw","code:"+i+"  msg:"+s);
             }
         });
     }
@@ -154,6 +155,7 @@ public class JMessageModel {
     public void onEventMainThread(NotificationClickEvent event) {
         if(!chartActivityON) {
             Intent intent = new Intent(context, ChartActivity.class);
+            intent.putExtra(Config.Key_Is_Admin,getMyInfo().getSignature().equals(Config.Key_Admin));
             context.startActivity(intent);//自定义跳转到指定页面
         }else{
             jMessageListener.changeConversation(event.getMessage());

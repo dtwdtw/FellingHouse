@@ -21,7 +21,7 @@ public class DialogImageBrowserImageLoader extends ImageLoader {
                 .error(R.drawable.nav_head)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
         Glide.with(context)
-                .load(QiNiuModel.getInstance().getPublicUrl((String) path))
+                .load(new QiNiuModel().getPublicUrl((String) path))
                 .apply(options)
                 .into(imageView);
     }

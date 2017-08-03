@@ -20,14 +20,17 @@ import android.widget.Toast;
 import com.dtw.fellinghouse.Bean.ProductBean;
 import com.dtw.fellinghouse.Bean.MainDataBean;
 import com.dtw.fellinghouse.Config;
+import com.dtw.fellinghouse.Presener.LoginPresener;
 import com.dtw.fellinghouse.Presener.MainPresener;
 import com.dtw.fellinghouse.Presener.WXSharePresener;
 import com.dtw.fellinghouse.R;
+import com.dtw.fellinghouse.Utils.SPUtil;
 import com.dtw.fellinghouse.View.AddProduct.AddProductActivity;
 import com.dtw.fellinghouse.View.BaseActivity;
 import com.dtw.fellinghouse.View.Chart.ChartActivity;
 import com.dtw.fellinghouse.View.EditProduct.EditProductActivity;
 import com.dtw.fellinghouse.View.Login.LoginActivity;
+import com.dtw.fellinghouse.View.Login.LoginView;
 import com.dtw.fellinghouse.View.Setting.SettingActivity;
 import com.dtw.fellinghouse.View.SimpleOnRecycleItemClickListener;
 import com.dtw.fellinghouse.View.Tenant.TenantActivity;
@@ -37,18 +40,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
-public class MainActivity extends BaseActivity implements MainView,NavigationView.OnNavigationItemSelectedListener ,SimpleOnRecycleItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+import cn.jpush.im.android.api.model.UserInfo;
+
+public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener, SimpleOnRecycleItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private WXSharePresener wxSharePresener;
     private RecyclerView mainRecycle;
     private SwipeRefreshLayout mainSwipeRefresh;
     private MenuItem menuAdd;
     private MenuItem menuLogin;
+    private MenuItem menuLogout;
     private ProductStaggeredRecycleAdapter productStaggeredRecycleAdapter;
-    private List<ProductBean> productBeanList =new ArrayList<>();
+    private List<ProductBean> productBeanList = new ArrayList<>();
     private MainDataBean mainDataBean;
     private MainPresener mainPresener;
-    private boolean isAdmin=false;
-    private boolean isLogin=false;
+    private boolean isAdmin = false;
+    private boolean isLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +63,7 @@ public class MainActivity extends BaseActivity implements MainView,NavigationVie
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mainPresener=new MainPresener(this,this);
+        mainPresener = new MainPresener(this, this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -67,11 +73,12 @@ public class MainActivity extends BaseActivity implements MainView,NavigationVie
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        menuAdd=navigationView.getMenu().findItem(R.id.nav_add);
-        menuLogin=navigationView.getMenu().findItem(R.id.nav_login);
+        menuAdd = navigationView.getMenu().findItem(R.id.nav_add);
+        menuLogin = navigationView.getMenu().findItem(R.id.nav_login);
+        menuLogout=navigationView.getMenu().findItem(R.id.nav_logout);
         menuAdd.setVisible(false);
 
-        mainSwipeRefresh= (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_main);
+        mainSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_main);
         mainSwipeRefresh.setOnRefreshListener(this);
         mainSwipeRefresh.setColorSchemeColors(
                 getResources().getColor(R.color.swipeRefreshColor0),
@@ -79,22 +86,23 @@ public class MainActivity extends BaseActivity implements MainView,NavigationVie
                 getResources().getColor(R.color.swipeRefreshColor2),
                 getResources().getColor(R.color.swipeRefreshColor3));
 
-        mainRecycle= (RecyclerView) findViewById(R.id.recycle_main);
-        mainRecycle.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
-        productStaggeredRecycleAdapter=new ProductStaggeredRecycleAdapter(this, productBeanList);
+        mainRecycle = (RecyclerView) findViewById(R.id.recycle_main);
+        mainRecycle.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        productStaggeredRecycleAdapter = new ProductStaggeredRecycleAdapter(this, productBeanList);
         productStaggeredRecycleAdapter.setSimpleOnRecycleItemClickListener(this);
         mainRecycle.setAdapter(productStaggeredRecycleAdapter);
-        mainPresener.getSimpleProductList(true,MainDataBean.class);
+        mainPresener.getSimpleProductList(true, MainDataBean.class);
 
+        mainPresener.login(new SPUtil(this).getUserName(),new SPUtil(this).getUserPassword());
         MobclickAgent.setCheckDevice(false);
-        wxSharePresener=new WXSharePresener(this);
+        wxSharePresener = new WXSharePresener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mainSwipeRefresh.setRefreshing(true);
-        mainPresener.getSimpleProductList(false,MainDataBean.class);
+        mainPresener.getSimpleProductList(false, MainDataBean.class);
     }
 
     @Override
@@ -103,7 +111,7 @@ public class MainActivity extends BaseActivity implements MainView,NavigationVie
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            Intent i= new Intent(Intent.ACTION_MAIN);
+            Intent i = new Intent(Intent.ACTION_MAIN);
 //            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             i.addCategory(Intent.CATEGORY_HOME);
             startActivity(i);
@@ -139,26 +147,33 @@ public class MainActivity extends BaseActivity implements MainView,NavigationVie
         switch (item.getItemId()) {
             case R.id.nav_login:
                 Intent login = new Intent(this, LoginActivity.class);
-                startActivityForResult(login,Config.Request_Code_Login);
+                startActivityForResult(login, Config.Request_Code_Login);
                 break;
             case R.id.nav_add:
-                Intent add=new Intent(this, AddProductActivity.class);
-                add.putExtra(Config.Key_Main_Product,mainDataBean);
+                Intent add = new Intent(this, AddProductActivity.class);
+                add.putExtra(Config.Key_Main_Product, mainDataBean);
                 startActivity(add);
                 break;
-            case R.id.nav_slideshow:
+            case R.id.nav_logout:
+                mainPresener.logout();
+                menuAdd.setVisible(false);
+                menuLogin.setVisible(true);
+                menuLogout.setVisible(false);
+                isLogin=false;
+                isAdmin=false;
                 break;
             case R.id.nav_chart:
-                if(isLogin) {
+                if (isLogin) {
                     Intent chart = new Intent(this, ChartActivity.class);
+                    chart.putExtra(Config.Key_Is_Admin, isAdmin);
                     startActivity(chart);
-                }else{
-                    showToast("请登录先");
+                } else {
+                    showToast("请先登录");
                 }
                 break;
             case R.id.nav_share:
-                wxSharePresener.sendWebMsg(Config.WXSceneSession,"market://details?id=" + getPackageName());
-                wxSharePresener.sendTextMsg(Config.WXSceneSession,"hello","love");
+                wxSharePresener.sendWebMsg(Config.WXSceneSession, Config.Share_Link);
+//                wxSharePresener.sendTextMsg(Config.WXSceneSession, "资克", "FellingHouse");
                 break;
             case R.id.nav_setting:
                 Intent setting = new Intent(this, SettingActivity.class);
@@ -172,15 +187,16 @@ public class MainActivity extends BaseActivity implements MainView,NavigationVie
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case Config.Request_Code_Login:
-                if(resultCode==RESULT_OK){
-                    isLogin=true;
+                if (resultCode == RESULT_OK) {
+                    isLogin = true;
                     menuLogin.setVisible(false);
-                    isAdmin=data.getBooleanExtra(Config.Key_Admin,false);
-                    if(isAdmin) {
+                    menuLogout.setVisible(true);
+                    isAdmin = data.getBooleanExtra(Config.Key_Admin, false);
+                    if (isAdmin) {
                         menuAdd.setVisible(true);
                     }
                 }
@@ -200,33 +216,33 @@ public class MainActivity extends BaseActivity implements MainView,NavigationVie
     }
 
     @Override
-    public void endRefreshing(){
+    public void endRefreshing() {
         mainSwipeRefresh.setRefreshing(false);
     }
 
     @Override
     public void showToast(String msg) {
-        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRefresh() {
-        mainPresener.getSimpleProductList(false,MainDataBean.class);
+        mainPresener.getSimpleProductList(false, MainDataBean.class);
     }
 
     @Override
     public void onRecycleItemClick(String adapterClassName, View v, int position) {
         if (adapterClassName.equals(ProductStaggeredRecycleAdapter.class.getName())) {
-            Log.v("dtw","click position:"+position);
-            ProductBrowserDialog productBrowserDialog=new ProductBrowserDialog(productBeanList.get(position),this,isLogin,R.style.dialog);
+            Log.v("dtw", "click position:" + position);
+            ProductBrowserDialog productBrowserDialog = new ProductBrowserDialog(productBeanList.get(position), this, isLogin,isAdmin, R.style.dialog);
             productBrowserDialog.show();
         }
     }
 
     @Override
     public void onRecycleItemLongClick(String adapterClassName, View v, int position) {
-        if(ProductStaggeredRecycleAdapter.class.getName().equals(adapterClassName)){
-            if(isAdmin) {
+        if (ProductStaggeredRecycleAdapter.class.getName().equals(adapterClassName)) {
+            if (isAdmin) {
                 final ProductBean productBean = productBeanList.get(position);
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(productBean.getName());

@@ -20,6 +20,8 @@
             android:id="@+id/text_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/message_background"
+            android:textColor="@color/whiteText"
             android:visibility="gone" />
 
         <ImageView

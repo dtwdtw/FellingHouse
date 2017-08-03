@@ -94,10 +94,10 @@ public class WXShareModel {
         WXWebpageObject webpage = new WXWebpageObject();
         webpage.webpageUrl = url;
         WXMediaMessage msg = new WXMediaMessage(webpage);
-        msg.title = "WebPage Title WebPage Title WebPage Title WebPage Title WebPage Title WebPage Title WebPage Title WebPage Title WebPage Title Very Long Very Long Very Long Very Long Very Long Very Long Very Long Very Long Very Long Very Long";
-        msg.description = "WebPage Description WebPage Description WebPage Description WebPage Description WebPage Description WebPage Description WebPage Description WebPage Description WebPage Description Very Long Very Long Very Long Very Long Very Long Very Long Very Long";
+        msg.title = "资克";
+        msg.description = "简单，时尚的短租服务！欢迎入住";
 
-        Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), R.drawable.nav_head);
+        Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.JPEG,100,baos);
         msg.thumbData = baos.toByteArray();

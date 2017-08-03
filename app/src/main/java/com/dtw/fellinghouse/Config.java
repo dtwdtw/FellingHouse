@@ -5,6 +5,13 @@ package com.dtw.fellinghouse;
  */
 
 public class Config {
+    public static final String Share_Link ="http://dtwdtw.tk";
+
+    //<editor-fold desc="腾讯位置处理">
+    //腾讯api文档   http://lbs.qq.com/webservice_v1/guide-convert.html
+    public static final String LocationTranslateQQAPI="http://apis.map.qq.com/ws/coord/v1/translate?type=1&key=2NMBZ-BQIW3-M5C3V-3DWQI-PR3EJ-5SFHN&locations=";
+    public static final String LocationDescripeQQAPI="http://apis.map.qq.com/ws/geocoder/v1/?key=2NMBZ-BQIW3-M5C3V-3DWQI-PR3EJ-5SFHN&location=";
+    //</editor-fold>
     public static final String MasterName="13011300265";
 
     public static final String Name_SimpleProductJson="main.json";
@@ -22,8 +29,10 @@ public class Config {
     public static final int Request_Code_SmsCodeLogin =101;
     public static final int Request_Code_Request_Image=103;
     public static final int Request_Code_Login=104;
+    public static final int Request_Code_Permission_Location=105;
 
     public static final String Key_Admin="admin";
+    public static final String Key_Is_Admin="isadmin";
     public static final String Key_PhnoeNum="phoneNum";
     public static final String Key_Password="password";
     public static final String Key_SP_KeyBoardHeight ="keyboardheight";

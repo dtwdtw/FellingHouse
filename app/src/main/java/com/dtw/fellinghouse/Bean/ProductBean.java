@@ -48,7 +48,7 @@ public  class ProductBean implements Parcelable{
     private long priceDecoration;
     private String createTime;
     private String updateTime;
-    private String state;
+    private boolean isEnabled;
     private String onerName;
     private String onerPhone;
     private String onerID;
@@ -80,7 +80,7 @@ public  class ProductBean implements Parcelable{
         priceDecoration = in.readLong();
         createTime = in.readString();
         updateTime = in.readString();
-        state = in.readString();
+        isEnabled = in.readByte()==1?true:false;
         onerName = in.readString();
         onerPhone = in.readString();
         onerID = in.readString();
@@ -129,7 +129,7 @@ public  class ProductBean implements Parcelable{
         dest.writeLong(priceDecoration);
         dest.writeString(createTime);
         dest.writeString(updateTime);
-        dest.writeString(state);
+        dest.writeByte(isEnabled ?(byte)1:(byte)0);
         dest.writeString(onerName);
         dest.writeString(onerPhone);
         dest.writeString(onerID);
@@ -250,12 +250,12 @@ public  class ProductBean implements Parcelable{
         this.updateTime = updateTime;
     }
 
-    public String getState() {
-        return state;
+    public boolean getState() {
+        return isEnabled;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setState(boolean isStateOut) {
+        this.isEnabled = isStateOut;
     }
 
     public String getOnerName() {

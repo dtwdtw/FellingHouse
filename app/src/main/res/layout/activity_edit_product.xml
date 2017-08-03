@@ -185,7 +185,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="房主描述"
-                        android:imeOptions="actionDone"
+                        android:imeOptions="actionNext"
                         android:inputType="text" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -204,7 +204,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="日租"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="numberDecimal" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -218,7 +218,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="周租"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="numberDecimal" />
                     </android.support.design.widget.TextInputLayout>
 
@@ -232,7 +232,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="月租"
-                            android:imeOptions="actionDone"
+                            android:imeOptions="actionNext"
                             android:inputType="numberDecimal" />
                     </android.support.design.widget.TextInputLayout>
                 </LinearLayout>

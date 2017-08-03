@@ -1,12 +1,14 @@
 package com.dtw.fellinghouse.Presener;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 
 import com.dtw.fellinghouse.Bean.MainDataBean;
 import com.dtw.fellinghouse.Bean.ProductBean;
 import com.dtw.fellinghouse.Bean.QiNiuResultBean;
 import com.dtw.fellinghouse.Config;
+import com.dtw.fellinghouse.Model.JMessageModel;
 import com.dtw.fellinghouse.Model.NetListener;
 import com.dtw.fellinghouse.Model.NetModel;
 import com.dtw.fellinghouse.Model.QiNiuListener;
@@ -17,6 +19,8 @@ import com.google.gson.Gson;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Administrator on 2017/7/15 0015.
@@ -29,11 +33,13 @@ public class MainPresener implements NetListener, QiNiuListener {
     private NetModel netModel;
     private QiNiuModel qiNiuModel;
     private SPUtil spUtil;
+    private JMessageModel jMessageModel;
 
     public MainPresener(Context context, MainView mainView) {
         this.context = context;
-        netModel = NetModel.getInstance(this);
-        qiNiuModel = QiNiuModel.getInstance();
+        netModel = new NetModel(this);
+        qiNiuModel = new QiNiuModel();
+        jMessageModel = JMessageModel.getInstance(context);
         this.mainView = mainView;
         spUtil = new SPUtil(context);
         qiNiuModel.setQiNiuListener(this);
@@ -43,7 +49,7 @@ public class MainPresener implements NetListener, QiNiuListener {
         if (onCreate || System.currentTimeMillis() - spUtil.getDataUpdateTime() > 60 * 1000) {
             spUtil.setDataUpdateTime();
             try {
-                netModel.getSimpleProductList(new URL(qiNiuModel.getPublicUrl(Config.Name_SimpleProductJson)), tClass);
+                netModel.postBean(new URL(qiNiuModel.getPublicUrl(Config.Name_SimpleProductJson)), tClass);
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -52,12 +58,42 @@ public class MainPresener implements NetListener, QiNiuListener {
         }
     }
 
+    public void login(String phoneNum, String password) {
+        jMessageModel.login(phoneNum, password, new JMessageModel.BaseCallBack() {
+            @Override
+            public void onResult(int code, String msg) {
+                switch (code) {
+                    case 0:
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent();
+                                if (Config.Key_Admin.equals(jMessageModel.getMyInfo().getSignature())) {
+                                    intent.putExtra(Config.Key_Admin, true);
+                                } else {
+                                    intent.putExtra(Config.Key_Admin, false);
+                                }
+                                mainView.onActivityResult(Config.Request_Code_Login, RESULT_OK, intent);
+                            }
+                        });
+                        break;
+                }
+            }
+        });
+    }
+
+    public void logout(){
+        jMessageModel.logout();
+        new SPUtil(context).setUserName("");
+        new SPUtil(context).setUserPassword("");
+    }
+
     public void deleteProduct(MainDataBean mainDataBean, ProductBean productBean) {
         mainDataBean.getProductList().remove(productBean);
         qiNiuModel.overWrite(QiNiuModel.TYPE_DELETE, Config.Name_SimpleProductJson, new Gson().toJson(mainDataBean));
     }
 
-    public void editTenant(){
+    public void editTenant() {
 
     }
 
@@ -90,12 +126,12 @@ public class MainPresener implements NetListener, QiNiuListener {
     }
 
     @Override
-    public void onUploadBitmap(int type,String originalKey, QiNiuResultBean qiNiuResultBean) {
+    public void onUploadBitmap(int type, String originalKey, QiNiuResultBean qiNiuResultBean) {
 
     }
 
     @Override
-    public void onUploadError(int type,int code, String msg) {
+    public void onUploadError(int type, int code, String msg) {
 
     }
 }

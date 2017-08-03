@@ -38,7 +38,6 @@ import java.util.Date;
  */
 
 public class QiNiuModel {
-    private static QiNiuModel qiNiuModel;
     private QiNiuListener qiNiuListener;
     private String accessKey = "HvU90834iovj59vqPjS2wqQNU8_Mg4szJS-gt8Xg";
     private String secretKey = "RDwROZoaiSaVjJzMyMZamdPWpYvlolxoVDGt9psM";
@@ -48,15 +47,8 @@ public class QiNiuModel {
     public static final int TYPE_ADD=1002;
     public static final int TYPE_EDIT=1003;
 
-    private QiNiuModel() {
+    public QiNiuModel() {
 
-    }
-
-    public static QiNiuModel getInstance() {
-        if (qiNiuModel == null) {
-            qiNiuModel = new QiNiuModel();
-        }
-        return qiNiuModel;
     }
 
     public void setQiNiuListener(QiNiuListener qiNiuListener) {

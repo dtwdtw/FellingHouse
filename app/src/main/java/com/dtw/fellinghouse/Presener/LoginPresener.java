@@ -28,7 +28,12 @@ public class LoginPresener{
             public void onResult(int code, String msg) {
                 switch (code){
                     case 0:
-                        loginView.goBack(jMessageModel.getMyInfo());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loginView.goBack(jMessageModel.getMyInfo());
+                            }
+                        });
                         break;
                 }
             }

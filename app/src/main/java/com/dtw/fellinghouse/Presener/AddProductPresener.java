@@ -1,15 +1,20 @@
 package com.dtw.fellinghouse.Presener;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 
+import com.dtw.fellinghouse.Bean.LocationQQBean;
+import com.dtw.fellinghouse.Bean.LocationsBean;
 import com.dtw.fellinghouse.Bean.MainDataBean;
 import com.dtw.fellinghouse.Bean.ProductBean;
 import com.dtw.fellinghouse.Bean.QiNiuResultBean;
+import com.dtw.fellinghouse.Bean.LocationTranslatedBean;
 import com.dtw.fellinghouse.Config;
+import com.dtw.fellinghouse.Model.NetListener;
+import com.dtw.fellinghouse.Model.NetModel;
 import com.dtw.fellinghouse.Model.QiNiuListener;
 import com.dtw.fellinghouse.Model.QiNiuModel;
 import com.dtw.fellinghouse.Utils.SPUtil;
@@ -18,20 +23,21 @@ import com.dtw.fellinghouse.View.AddProduct.AddProductView;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Created by Administrator on 2017/7/21 0021.
  */
 
-public class AddProductPresener implements QiNiuListener {
+public class AddProductPresener implements QiNiuListener,NetListener {
     private Handler handler;
     private Context context;
     private AddProductView addProductView;
     private QiNiuModel qiNiuModel;
+    private NetModel netModel;
     private MainDataBean mainDataBean;
     private List<String> qiniuImageNamelist = new ArrayList<>();
     private int uploadimgNum=-1;
@@ -41,8 +47,9 @@ public class AddProductPresener implements QiNiuListener {
         this.context = context;
         this.addProductView = addProductView;
         this.handler = new Handler();
-        this.qiNiuModel = qiNiuModel.getInstance();
+        this.qiNiuModel = new QiNiuModel();
         qiNiuModel.setQiNiuListener(this);
+        netModel=new NetModel(this);
     }
 
     public void insertProduct(MainDataBean mainDataBean, ProductBean productBeanWithOutImageList, List<String> uriList) {
@@ -94,5 +101,35 @@ public class AddProductPresener implements QiNiuListener {
     @Override
     public void onUploadError(int type,int code, String msg) {
         Log.v("dtw", "upload errorCode:" + code + " msg:" + msg);
+    }
+
+    public void getLocationDescripe(LocationsBean locationsBean){
+        try {
+            netModel.getBean(new URL(Config.LocationTranslateQQAPI+locationsBean.getLat()+","+locationsBean.getLng()), LocationTranslatedBean.class);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+//        try {
+//            netModel.getBean(new URL(Config.LocationDescripeQQAPI+locationsBean.getLat()+","+locationsBean.getLng()),LocationQQBean.class);
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    @Override
+    public <T> void onData(T data) {
+        Log.v("dtw",data.getClass().getSimpleName());
+        if(data instanceof LocationTranslatedBean){
+            LocationTranslatedBean locationTranslatedBean = (LocationTranslatedBean) data;
+            try {
+                if(locationTranslatedBean.getLocations().size()>0) {
+                    netModel.getBean(new URL(Config.LocationDescripeQQAPI + locationTranslatedBean.getLocations().get(0).getLat() + "," + locationTranslatedBean.getLocations().get(0).getLng()), LocationQQBean.class);
+                }
+                } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }else if(data instanceof LocationQQBean) {
+            addProductView.onLocationBean((LocationQQBean) data);
+        }
     }
 }

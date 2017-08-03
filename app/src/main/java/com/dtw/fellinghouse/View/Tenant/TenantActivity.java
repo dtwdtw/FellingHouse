@@ -7,7 +7,9 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,7 @@ public class TenantActivity extends BaseActivity implements TenantView{
     private ProductBean editProductBean;
     private RecyclerView imageRecycleView;
     private TextView tenantName,tenantPhone,tenantID,tenantLength,tenantPrice;
+    private Switch isEnabledSwitch;
     private RadioGroup tenantLengthType;
     private List<String> imagURLList=new ArrayList<>();
     @Override
@@ -50,6 +53,7 @@ public class TenantActivity extends BaseActivity implements TenantView{
         tenantLength= (TextView) findViewById(R.id.edit_tenant_length);
         tenantPrice= (TextView) findViewById(R.id.edit_tenant_price);
         tenantLengthType= (RadioGroup) findViewById(R.id.radiogroup_length_type);
+        isEnabledSwitch =(Switch)findViewById(R.id.switch_is_state_out);
 
         mainDataBean=getIntent().getParcelableExtra(Config.Key_Main_Product);
         editProductBean=getIntent().getParcelableExtra(Config.Key_Product);
@@ -60,6 +64,19 @@ public class TenantActivity extends BaseActivity implements TenantView{
         tenantID.setText(editProductBean.getTenantID());
         tenantLength.setText(String.valueOf(editProductBean.getTenantLength()));
         tenantPrice.setText(String.valueOf(editProductBean.getTenantPrice()));
+
+        isEnabledSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    buttonView.setText("闲置，等待贵宾入住");
+                }else{
+                    buttonView.setText("已有贵宾入住或不可用");
+                }
+            }
+        });
+        isEnabledSwitch.setChecked(editProductBean.getState());
+
         if(Config.TYPE_DAY.equals(editProductBean.getTenantType())){
             tenantLengthType.check(R.id.radio_day);
         }else if(Config.TYPE_WEEK.equals(editProductBean.getTenantType())){
@@ -71,7 +88,7 @@ public class TenantActivity extends BaseActivity implements TenantView{
         imageRecycleView= (RecyclerView) findViewById(R.id.recycle_product_img_list);
         imageRecycleView.setLayoutManager(new StaggeredGridLayoutManager(4,StaggeredGridLayoutManager.VERTICAL));
         for(int i=0;i<editProductBean.getProductImgNameList().size();i++){
-            imagURLList.add(QiNiuModel.getInstance().getPublicUrl(editProductBean.getProductImgNameList().get(i)));
+            imagURLList.add(new QiNiuModel().getPublicUrl(editProductBean.getProductImgNameList().get(i)));
         }
         ImageRecycleAdapter imageRecycleAdapter=new ImageRecycleAdapter(this,imagURLList);
         imageRecycleView.setAdapter(imageRecycleAdapter);
@@ -95,6 +112,7 @@ public class TenantActivity extends BaseActivity implements TenantView{
                 editProductBean.setTenantID(tenantID.getText().toString());
                 editProductBean.setTenantLength(Integer.parseInt(tenantLength.getText().toString()));
                 editProductBean.setTenantPrice(Long.parseLong(tenantPrice.getText().toString()));
+                editProductBean.setState(isEnabledSwitch.isChecked());
                 switch (tenantLengthType.getCheckedRadioButtonId()){
                     case R.id.radio_day:
                         editProductBean.setTenantType(Config.TYPE_DAY);

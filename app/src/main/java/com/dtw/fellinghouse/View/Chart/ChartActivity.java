@@ -31,6 +31,7 @@ import com.dtw.fellinghouse.Config;
 import com.dtw.fellinghouse.Presener.ChartPresener;
 import com.dtw.fellinghouse.R;
 import com.dtw.fellinghouse.Utils.SPUtil;
+import com.dtw.fellinghouse.Utils.ScreenUtil;
 import com.dtw.fellinghouse.Utils.UriUtil;
 import com.dtw.fellinghouse.View.BaseActivity;
 import com.dtw.fellinghouse.View.SimpleOnRecycleItemClickListener;
@@ -62,6 +63,7 @@ public class ChartActivity extends BaseActivity implements ChartView, SoftKeyBoa
     private boolean isKeyboardShow = false;
     private boolean isMoreRVShow = false;
     private InputMethodManager imm;
+    private boolean isAdmin=false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,31 +72,47 @@ public class ChartActivity extends BaseActivity implements ChartView, SoftKeyBoa
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("会话");
+        isAdmin=getIntent().getBooleanExtra(Config.Key_Is_Admin,false);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        drawer.openDrawer(GravityCompat.START);
-
+        //<editor-fold desc="初始化控件">
         recyclerView = (RecyclerView) findViewById(R.id.recycleview_message_list);
         friendRecycleList = (RecyclerView) findViewById(R.id.recycle_friend);
         keyBoardMoreRV = (RecyclerView) findViewById(R.id.recycle_more_keyboard);
         msgEdit = (EditText) findViewById(R.id.edit_text);
         sendImgBtn = (ImageButton) findViewById(R.id.imgbtn_send);
         moreImgBtn = (ImageButton) findViewById(R.id.imgbtn_more);
+        //</editor-fold>
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if(isAdmin) {
+            //<editor-fold desc="配置Drawable与Toolbar联动">
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                    this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+            drawer.setDrawerListener(toggle);
+            toggle.syncState();
+            drawer.openDrawer(GravityCompat.START);
+            //</editor-fold>
+        }else{
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+
+        //<editor-fold desc="初始化MessageList页面">
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addItemDecoration(new RecycleViewItemDecoration());
+        recyclerView.addItemDecoration(new RecycleViewItemDecoration(0,ScreenUtil.dip2px(this,8),0,0));
         messageListAdapter = new MessageListAdapter(this, messageListMain);
         messageListAdapter.setSimpleOnRecycleItemClickListener(this);
         recyclerView.setAdapter(messageListAdapter);
+        //</editor-fold>
 
+        //<editor-fold desc="初始化好友列表">
         friendRecycleAdapter = new FriendRecycleAdapter(this, conversationListMain, new SPUtil(this).getLastChartUserName());
         friendRecycleAdapter.setSimpleOnRecycleItemClickListener(this);
         friendRecycleList.setLayoutManager(new LinearLayoutManager(this));
         friendRecycleList.setAdapter(friendRecycleAdapter);
+        //</editor-fold>
 
+        //<editor-fold desc="初始化自定义键盘">
         KeyBoardMoreItemBean keyBoardMoreItemBean = new KeyBoardMoreItemBean();
         keyBoardMoreItemBean.setImgResID(R.drawable.gallery);
         keyBoardMoreItemBean.setTitle("图库");
@@ -108,15 +126,20 @@ public class ChartActivity extends BaseActivity implements ChartView, SoftKeyBoa
         moreKeyboardAdapter.setSimpleOnRecycleItemClickListener(this);
         keyBoardMoreRV.setLayoutManager(new GridLayoutManager(this, 4));
         keyBoardMoreRV.setAdapter(moreKeyboardAdapter);
+        //</editor-fold>
 
         SoftKeyBoardListener.setListener(this, this);
         imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
 
         chartPresener = new ChartPresener(this, this);
-        chartPresener.getLocalConversation();
+        if(isAdmin) {
+            chartPresener.getLocalConversation();
+        }else{
+            chartPresener.getLocalMessages(Config.MasterName);
+        }
 
-        //判断是否需要显示发送按钮
+        //<editor-fold desc="判断是否需要显示发送按钮">
         msgEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -171,6 +194,7 @@ public class ChartActivity extends BaseActivity implements ChartView, SoftKeyBoa
                 return false;
             }
         });
+        //</editor-fold>
     }
 
     @Override

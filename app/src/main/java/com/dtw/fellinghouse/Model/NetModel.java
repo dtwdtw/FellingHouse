@@ -20,21 +20,14 @@ import java.util.List;
  */
 
 public class NetModel {
-    private static NetModel netModel;
     private NetListener netListener;
 
-    private NetModel(NetListener netListener) {
+    public NetModel(NetListener netListener) {
         this.netListener = netListener;
     }
 
-    public static NetModel getInstance(NetListener netListener) {
-        if (netModel == null) {
-            netModel = new NetModel(netListener);
-        }
-        return netModel;
-    }
 
-    public <T> void getSimpleProductList(final URL url, final Class<T> tClass) {
+    public <T> void postBean(final URL url, final Class<T> tClass) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -63,8 +56,36 @@ public class NetModel {
         }).start();
     }
 
-    public <T> T StringToObject(String json, Class<T> tClass) {
-        Log.v("dtw","mainJson:"+json);
+    public <T> void getBean(final URL url, final Class<T> tClass) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("GET");// 设置请求方法为post
+
+                    int responseCode = httpURLConnection.getResponseCode();// 调用此方法就不必再使用conn.connect()方法
+                    if (responseCode == 200) {
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        byte[] bytes = new byte[1024];
+                        int length = -1;
+                        while ((length = inputStream.read(bytes)) != -1) {
+                            byteArrayOutputStream.write(bytes, 0, length);
+                        }
+                        netListener.onData(StringToObject(new String(byteArrayOutputStream.toByteArray(),"utf-8"), tClass));
+                    } else {
+
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private <T> T StringToObject(String json, Class<T> tClass) {
+        Log.v("dtw",tClass.getSimpleName()+"-Json:"+json);
         Gson gson = new Gson();
         return gson.fromJson(json, tClass);
     }

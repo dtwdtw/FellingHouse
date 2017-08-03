@@ -32,7 +32,7 @@ public class TenantPresener implements QiNiuListener {
         handler = new Handler();
         this.context=context;
         this.tenantView=tenantView;
-        qiNiuModel = QiNiuModel.getInstance();
+        qiNiuModel = new QiNiuModel();
         qiNiuModel.setQiNiuListener(this);
     }
 
