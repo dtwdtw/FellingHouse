@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
-import android.webkit.URLUtil;
 
 import com.dtw.fellinghouse.Bean.MainDataBean;
 import com.dtw.fellinghouse.Bean.ProductBean;
@@ -50,14 +49,14 @@ public class EditProductPresener implements QiNiuListener {
         if(uploadimgNum>0) {
             for (String imgUri : uriList) {
                 try {
-                    qiNiuModel.insert(QiNiuModel.TYPE_EDIT, null, UriUtil.getBitmapFormUri(context, Uri.parse(imgUri)));
+                    qiNiuModel.insertImg(QiNiuModel.TYPE_EDIT, null, UriUtil.getBitmapFormUri(context, Uri.parse(imgUri)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }else{
             mainDataBean.getProductList().add(editProductBean);
-            qiNiuModel.overWrite(QiNiuModel.TYPE_EDIT, Config.Name_SimpleProductJson, new Gson().toJson(mainDataBean));
+            qiNiuModel.overWriteJson(QiNiuModel.TYPE_EDIT, Config.Name_SimpleProductJson, new Gson().toJson(mainDataBean));
         }
     }
 
@@ -68,7 +67,7 @@ public class EditProductPresener implements QiNiuListener {
                 break;
             }
         }
-        qiNiuModel.overWrite(QiNiuModel.TYPE_DELETE, Config.Name_SimpleProductJson, new Gson().toJson(mainDataBean));
+        qiNiuModel.overWriteJson(QiNiuModel.TYPE_DELETE, Config.Name_SimpleProductJson, new Gson().toJson(mainDataBean));
     }
 
     @Override
@@ -99,7 +98,7 @@ public class EditProductPresener implements QiNiuListener {
         if(qiniuImageNamelist.size()==uploadimgNum){
             editProductBean.getProductImgNameList().addAll(qiniuImageNamelist);
             mainDataBean.getProductList().add(editProductBean);
-            qiNiuModel.overWrite(type,Config.Name_SimpleProductJson,new Gson().toJson(mainDataBean));
+            qiNiuModel.overWriteJson(type,Config.Name_SimpleProductJson,new Gson().toJson(mainDataBean));
         }
     }
 

@@ -1,7 +1,6 @@
 package com.dtw.fellinghouse.Presener;
 
 import android.content.Context;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
@@ -61,7 +60,7 @@ public class AddProductPresener implements QiNiuListener,NetListener {
         }
         for (String imgUri : uriList) {
             try {
-                qiNiuModel.insert(QiNiuModel.TYPE_ADD,null, UriUtil.getBitmapFormUri(context, Uri.parse(imgUri)));
+                qiNiuModel.insertImg(QiNiuModel.TYPE_ADD,null, UriUtil.getBitmapFormUri(context, Uri.parse(imgUri)));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -94,7 +93,7 @@ public class AddProductPresener implements QiNiuListener,NetListener {
         if(qiniuImageNamelist.size()==uploadimgNum){
             productBean.setProductImgNameList(qiniuImageNamelist);
             mainDataBean.getProductList().add(productBean);
-            qiNiuModel.overWrite(type,Config.Name_SimpleProductJson,new Gson().toJson(mainDataBean));
+            qiNiuModel.overWriteJson(type,Config.Name_SimpleProductJson,new Gson().toJson(mainDataBean));
         }
     }
 

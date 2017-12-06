@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,8 @@ import com.dtw.fellinghouse.Utils.SPUtil;
 import com.dtw.fellinghouse.View.SmsCodeLogin.SmsCodeLoginActivity;
 import com.dtw.fellinghouse.View.BaseActivity;
 import com.dtw.fellinghouse.View.Regist.RegistActivity;
+
+import java.security.MessageDigest;
 
 import cn.jpush.im.android.api.model.UserInfo;
 
@@ -71,12 +74,18 @@ public class LoginActivity extends BaseActivity implements LoginView{
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode){
             case Config.Request_Code_Regist:
-                if(requestCode==RESULT_OK){
-
+                if(resultCode==RESULT_OK){
+                    Log.v("Dtw","login");
+                    String phone=data.getStringExtra(Config.Key_PhnoeNum);
+                    String pwd=data.getStringExtra(Config.Key_Password);
+                    phoneNum.setText(phone);
+                    password.setText(pwd);
+                    showToast("正在自动登录...");
+                    loginPresener.login(phone,pwd);
                 }
                 break;
             case Config.Request_Code_SmsCodeLogin:
-                if(requestCode==RESULT_OK){
+                if(resultCode==RESULT_OK){
 
                 }
                 break;

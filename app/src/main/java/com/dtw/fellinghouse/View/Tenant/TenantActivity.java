@@ -88,7 +88,7 @@ public class TenantActivity extends BaseActivity implements TenantView{
         imageRecycleView= (RecyclerView) findViewById(R.id.recycle_product_img_list);
         imageRecycleView.setLayoutManager(new StaggeredGridLayoutManager(4,StaggeredGridLayoutManager.VERTICAL));
         for(int i=0;i<editProductBean.getProductImgNameList().size();i++){
-            imagURLList.add(new QiNiuModel().getPublicUrl(editProductBean.getProductImgNameList().get(i)));
+            imagURLList.add(new QiNiuModel().getPublicImgUrl(editProductBean.getProductImgNameList().get(i)));
         }
         ImageRecycleAdapter imageRecycleAdapter=new ImageRecycleAdapter(this,imagURLList);
         imageRecycleView.setAdapter(imageRecycleAdapter);

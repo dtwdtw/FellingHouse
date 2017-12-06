@@ -9,6 +9,7 @@ import com.dtw.fellinghouse.View.Chart.ChartActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 
 import cn.jpush.im.android.api.JMessageClient;
 import cn.jpush.im.android.api.callback.GetUserInfoCallback;
@@ -99,6 +100,26 @@ public class JMessageModel {
         }
         JMessageClient.sendMessage(message);
         Log.v("dtw",message.toString());
+        return message;
+    }
+
+    public Message sendMultiTextMessage(List<String> targetList,String textMessage){
+        for(String targetName:targetList){
+            sendTextMesage(targetName,textMessage);
+        }
+        return JMessageClient.createSingleTextMessage(Config.Key_Admin,textMessage);
+    }
+
+    public Message sendMultiImageMessage(List<String> targetList,File imageMessage){
+        for(String targetName:targetList){
+            sendImageMessage(targetName,imageMessage);
+        }
+        Message message=null;
+        try {
+            message=JMessageClient.createSingleImageMessage(Config.Key_Admin,imageMessage);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         return message;
     }
 

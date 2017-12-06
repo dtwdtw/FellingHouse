@@ -15,4 +15,5 @@ public interface MainView {
     void endRefreshing();
     void showToast(String msg);
     void onActivityResult(int Request_Code, int Result_Code, Intent intent);
+    void isAdmin(boolean isAdmin);
 }

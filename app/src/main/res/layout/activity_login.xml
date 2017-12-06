@@ -32,7 +32,7 @@
         android:padding="10dp"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:text="注册"/>
+        android:text="@string/regist"/>
 
     <ImageView
         android:layout_width="wrap_content"
@@ -67,7 +67,7 @@
                     android:id="@+id/edit_phone_num"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="手机号"
+                    android:hint="@string/phoneNum"
                     android:inputType="phone"
                     android:maxLength="11" />
             </android.support.design.widget.TextInputLayout>
@@ -80,7 +80,7 @@
                     android:id="@+id/edit_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="密码"
+                    android:hint="@string/password"
                     android:inputType="textPassword"/>
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
@@ -102,7 +102,7 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/riple_round_bound"
                 android:onClick="onClick"
-                android:text="登录"
+                android:text="@string/login"
                 android:textColor="@color/colorBlack"
                 android:textSize="18dp" />
 
@@ -117,7 +117,7 @@
                 android:layout_marginBottom="10dp"
                 android:background="@drawable/riple_round_bound"
                 android:onClick="onClick"
-                android:text="验证码登录"
+                android:text="@string/login_by_sms"
                 android:textColor="@color/colorBlack"
                 android:textSize="18dp" />
         </LinearLayout>

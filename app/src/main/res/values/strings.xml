@@ -5,4 +5,28 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="nav_login">Login</string>
+    <string name="nav_add">Add</string>
+    <string name="nav_chart">Chart</string>
+    <string name="nav_share">Share</string>
+    <string name="nav_settings">Setting</string>
+    <string name="nav_logout">Logout</string>
+    <string name="notify_sound_play">Play Notify Sound</string>
+    <string name="notify_message_pop">Pop Notify Message</string>
+    <string name="notify_sound_no_play">Show Silently</string>
+    <string name="notify_message_no_pop">Block</string>
+    <string name="notify_model">Notifications</string>
+    <string name="user_setting">User Setting</string>
+    <string name="add_admin">Add Manager</string>
+    <string name="admin_phone">Admin PhoneNum</string>
+    <string name="input_admin_phone">Type Admin PhoneNum</string>
+    <string name="cancle">Cancle</string>
+    <string name="ok">OK</string>
+    <string name="need_wechart">Need To Install Wechart First</string>
+    <string name="need_login">Please Login First</string>
+    <string name="regist">Regist</string>
+    <string name="phoneNum">Phone Number</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="login_by_sms">Login By Sms Code</string>
 </resources>

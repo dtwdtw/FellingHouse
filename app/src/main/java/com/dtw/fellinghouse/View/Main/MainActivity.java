@@ -1,8 +1,11 @@
 package com.dtw.fellinghouse.View.Main;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,7 +23,6 @@ import android.widget.Toast;
 import com.dtw.fellinghouse.Bean.ProductBean;
 import com.dtw.fellinghouse.Bean.MainDataBean;
 import com.dtw.fellinghouse.Config;
-import com.dtw.fellinghouse.Presener.LoginPresener;
 import com.dtw.fellinghouse.Presener.MainPresener;
 import com.dtw.fellinghouse.Presener.WXSharePresener;
 import com.dtw.fellinghouse.R;
@@ -30,7 +32,6 @@ import com.dtw.fellinghouse.View.BaseActivity;
 import com.dtw.fellinghouse.View.Chart.ChartActivity;
 import com.dtw.fellinghouse.View.EditProduct.EditProductActivity;
 import com.dtw.fellinghouse.View.Login.LoginActivity;
-import com.dtw.fellinghouse.View.Login.LoginView;
 import com.dtw.fellinghouse.View.Setting.SettingActivity;
 import com.dtw.fellinghouse.View.SimpleOnRecycleItemClickListener;
 import com.dtw.fellinghouse.View.Tenant.TenantActivity;
@@ -38,9 +39,6 @@ import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
-
-import cn.jpush.im.android.api.model.UserInfo;
 
 public class MainActivity extends BaseActivity implements MainView, NavigationView.OnNavigationItemSelectedListener, SimpleOnRecycleItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private WXSharePresener wxSharePresener;
@@ -168,15 +166,25 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     chart.putExtra(Config.Key_Is_Admin, isAdmin);
                     startActivity(chart);
                 } else {
-                    showToast("请先登录");
+                    showToast(getString(R.string.need_login));
                 }
                 break;
             case R.id.nav_share:
-                wxSharePresener.sendWebMsg(Config.WXSceneSession, Config.Share_Link);
+                Intent intent = new Intent();
+                ComponentName cmp=new ComponentName("com.tencent.mm","com.tencent.mm.ui.LauncherUI");
+                intent.setComponent(cmp);
+                try {
+                    getPackageManager().getPackageInfo("com.tencent.mm", 0);
+                    wxSharePresener.sendWebMsg(Config.WXSceneSession, Config.Share_Link);
+                } catch (PackageManager.NameNotFoundException e) {
+                    Toast.makeText(this, R.string.need_wechart,Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
 //                wxSharePresener.sendTextMsg(Config.WXSceneSession, "资克", "FellingHouse");
                 break;
             case R.id.nav_setting:
                 Intent setting = new Intent(this, SettingActivity.class);
+                setting.putExtra(Config.Key_Is_Admin,this.isAdmin);
                 startActivity(setting);
                 break;
         }
@@ -195,12 +203,17 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
                     isLogin = true;
                     menuLogin.setVisible(false);
                     menuLogout.setVisible(true);
-                    isAdmin = data.getBooleanExtra(Config.Key_Admin, false);
-                    if (isAdmin) {
-                        menuAdd.setVisible(true);
-                    }
+                    mainPresener.getMyInfo(new SPUtil(this).getUserName());
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void isAdmin(boolean isAdmin) {
+        if(isAdmin){
+            this.isAdmin=isAdmin;
+            menuAdd.setVisible(true);
         }
     }
 
@@ -234,6 +247,8 @@ public class MainActivity extends BaseActivity implements MainView, NavigationVi
     public void onRecycleItemClick(String adapterClassName, View v, int position) {
         if (adapterClassName.equals(ProductStaggeredRecycleAdapter.class.getName())) {
             Log.v("dtw", "click position:" + position);
+            Rect rect=new Rect();
+            v.getGlobalVisibleRect(rect);
             ProductBrowserDialog productBrowserDialog = new ProductBrowserDialog(productBeanList.get(position), this, isLogin,isAdmin, R.style.dialog);
             productBrowserDialog.show();
         }

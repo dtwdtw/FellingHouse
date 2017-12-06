@@ -1,7 +1,6 @@
 package com.dtw.fellinghouse.Presener;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 
 import com.dtw.fellinghouse.Bean.MainDataBean;
@@ -11,12 +10,8 @@ import com.dtw.fellinghouse.Config;
 import com.dtw.fellinghouse.Model.QiNiuListener;
 import com.dtw.fellinghouse.Model.QiNiuModel;
 import com.dtw.fellinghouse.Utils.SPUtil;
-import com.dtw.fellinghouse.Utils.UriUtil;
 import com.dtw.fellinghouse.View.Tenant.TenantView;
 import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by Administrator on 2017/7/25 0025.
@@ -38,7 +33,7 @@ public class TenantPresener implements QiNiuListener {
 
     public void insertProduct(MainDataBean mainDataBean, ProductBean productBean) {
         mainDataBean.getProductList().add(productBean);
-        qiNiuModel.overWrite(QiNiuModel.TYPE_EDIT, Config.Name_SimpleProductJson, new Gson().toJson(mainDataBean));
+        qiNiuModel.overWriteJson(QiNiuModel.TYPE_EDIT, Config.Name_SimpleProductJson, new Gson().toJson(mainDataBean));
 
     }
 

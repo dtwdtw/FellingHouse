@@ -50,11 +50,15 @@ public class RegistActivity extends BaseActivity implements RegistView {
             case R.id.btn_code:
                 registPresener.getCode(phoneNum.getText().toString());
                 break;
-            case R.id.btn_regist:
-                registPresener.verifyCode(phoneNum.getText().toString(),code.getText().toString());
-                break;
             case R.id.text_voice_verify:
                 registPresener.getVoiceCode(phoneNum.getText().toString());
+                break;
+            case R.id.btn_regist:
+                if (password.getText().toString().length() > 5) {
+                    registPresener.verifyCode(phoneNum.getText().toString(), password.getText().toString(), code.getText().toString());
+                }else{
+                    showToast("请输入大于六位字符的密码");
+                }
                 break;
         }
     }
@@ -82,10 +86,10 @@ public class RegistActivity extends BaseActivity implements RegistView {
 
     @Override
     public void goBackWidthData() {
-        Intent intent=new Intent();
-        intent.putExtra(Config.Key_PhnoeNum,phoneNum.getText().toString());
-        intent.putExtra(Config.Key_Password,password.getText().toString());
-        setResult(RESULT_OK,intent);
+        Intent intent = new Intent();
+        intent.putExtra(Config.Key_PhnoeNum, phoneNum.getText().toString());
+        intent.putExtra(Config.Key_Password, password.getText().toString());
+        setResult(RESULT_OK, intent);
         finish();
     }
 

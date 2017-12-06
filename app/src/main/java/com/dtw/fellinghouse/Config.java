@@ -12,6 +12,7 @@ public class Config {
     public static final String LocationTranslateQQAPI="http://apis.map.qq.com/ws/coord/v1/translate?type=1&key=2NMBZ-BQIW3-M5C3V-3DWQI-PR3EJ-5SFHN&locations=";
     public static final String LocationDescripeQQAPI="http://apis.map.qq.com/ws/geocoder/v1/?key=2NMBZ-BQIW3-M5C3V-3DWQI-PR3EJ-5SFHN&location=";
     //</editor-fold>
+
     public static final String MasterName="13011300265";
 
     public static final String Name_SimpleProductJson="main.json";

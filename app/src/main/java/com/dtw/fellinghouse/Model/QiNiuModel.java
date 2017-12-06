@@ -2,14 +2,10 @@ package com.dtw.fellinghouse.Model;
 
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
-import android.util.Log;
 
-import com.dtw.fellinghouse.Bean.ProductBean;
 import com.dtw.fellinghouse.Bean.QiNiuResultBean;
 import com.dtw.fellinghouse.Config;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.qiniu.cdn.CdnManager;
 import com.qiniu.cdn.CdnResult;
 import com.qiniu.common.QiniuException;
@@ -18,12 +14,8 @@ import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
-import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,11 +33,18 @@ public class QiNiuModel {
     private QiNiuListener qiNiuListener;
     private String accessKey = "HvU90834iovj59vqPjS2wqQNU8_Mg4szJS-gt8Xg";
     private String secretKey = "RDwROZoaiSaVjJzMyMZamdPWpYvlolxoVDGt9psM";
-    private String bucket = "fellinghouseimage";
+    private String DomainImg = "http://ot9t0q9wl.bkt.clouddn.com";
+    private String DomainJson = "http://ou531g0fp.bkt.clouddn.com";
+    private String DomainUser = "http://ou53zqmns.bkt.clouddn.com";
+    private String Bucket_Img ="fellinghouseimage";
+    private String Bucket_User="user";
+    private String Bucket_Json="fellinghousejson";
+
     private Configuration cfg = new Configuration(Zone.zone1());
-    public static final int TYPE_DELETE=1001;
-    public static final int TYPE_ADD=1002;
-    public static final int TYPE_EDIT=1003;
+    public static final int TYPE_DELETE = 1001;
+    public static final int TYPE_ADD = 1002;
+    public static final int TYPE_EDIT = 1003;
+    public static final int TYPE_SETADMIN=1004;
 
     public QiNiuModel() {
 
@@ -55,46 +54,54 @@ public class QiNiuModel {
         this.qiNiuListener = qiNiuListener;
     }
 
-    public void insert(int type,String name, String value) {
-        upLoad(type,name, value, getInsertToken());
+    public void insertJson(int type, String name, String value) {
+        upLoad(type, name, value, getInsertToken(Bucket_Json));
     }
 
-    public void insert(int type,String name, Bitmap bitmap) {
-        upLoad(type,name, bitmap, getInsertToken());
+    public void insertImg(int type, String name, Bitmap bitmap) {
+        upLoad(type, name, bitmap, getInsertToken(Bucket_Img));
     }
 
-    public void overWrite(int type,String name, String value) {
-        upLoad(type,name, value, getOverWriteToken(name));
+    public void overWriteJson(int type, String name, String value) {
+        upLoad(type, name, value, getOverWriteToken(Bucket_Json, name));
     }
 
-    public void overWrite(int type,String name, Bitmap bitmap) {
-        upLoad(type,name, bitmap, getOverWriteToken(name));
+    public void overWriteImg(int type, String name, Bitmap bitmap) {
+        upLoad(type, name, bitmap, getOverWriteToken(Bucket_Img, name));
     }
 
-    private String getInsertToken() {
+    public void insertUser(int type,String name,String value){
+        upLoad(type,name,value,getInsertToken(Bucket_User));
+    }
+
+    public void overWriteUser(int type,String name,String value){
+        upLoad(type,name,value,getOverWriteToken(Bucket_User,name));
+    }
+
+    private String getInsertToken(String bucketName) {
         Auth auth = Auth.create(accessKey, secretKey);
         StringMap putPolicy = new StringMap();
-        putPolicy.put("returnBody", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"fsize\":$(fsize)}");
+        putPolicy.put("returnBody", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"imgBucket\":\"$(imgBucket)\",\"fsize\":$(fsize)}");
         long expireSeconds = 3600;
-        return auth.uploadToken(bucket, null, expireSeconds, putPolicy);
+        return auth.uploadToken(bucketName, null, expireSeconds, putPolicy);
     }
 
-    private String getOverWriteToken(String fileName) {
+    private String getOverWriteToken(String bucketName, String fileName) {
         Auth auth = Auth.create(accessKey, secretKey);
         StringMap putPolicy = new StringMap();
-        putPolicy.put("returnBody", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"fsize\":$(fsize)}");
+        putPolicy.put("returnBody", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"imgBucket\":\"$(imgBucket)\",\"fsize\":$(fsize)}");
         long expireSeconds = 3600;
-        return auth.uploadToken(bucket, fileName, expireSeconds, putPolicy);
+        return auth.uploadToken(bucketName, fileName, expireSeconds, putPolicy);
     }
 
-    private void upLoad(final int type,final String key, final Bitmap bitmap, final String token) {
+    private void upLoad(final int type, final String key, final Bitmap bitmap, final String token) {
         final Configuration cfg = new Configuration(Zone.zone1());
         final UploadManager uploadManager = new UploadManager(cfg);
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String originalKey=key;
-                int type_up=type;
+                String originalKey = key;
+                int type_up = type;
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
                 ByteArrayInputStream byteInputStream = new ByteArrayInputStream(baos.toByteArray());
@@ -103,11 +110,11 @@ public class QiNiuModel {
                     //解析上传成功的结果
                     QiNiuResultBean qiNiuResultBean = new Gson().fromJson(response.bodyString(), QiNiuResultBean.class);
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUploadBitmap(type_up,originalKey,qiNiuResultBean);
+                        qiNiuListener.onUploadBitmap(type_up, originalKey, qiNiuResultBean);
                     }
                 } catch (QiniuException ex) {
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUploadError(type_up,ex.code(), ex.error());
+                        qiNiuListener.onUploadError(type_up, ex.code(), ex.error());
                     }
                 }
             }
@@ -119,60 +126,82 @@ public class QiNiuModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String originalKey=name;
-                int type_up=type;
+                String originalKey = name;
+                int type_up = type;
                 try {
                     Response response = uploadManager.put(value.getBytes(), name, token);
                     //解析上传成功的结果
                     QiNiuResultBean qiNiuResultBean = new Gson().fromJson(response.bodyString(), QiNiuResultBean.class);
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUploadString(type_up,originalKey,qiNiuResultBean);
+                        qiNiuListener.onUploadString(type_up, originalKey, qiNiuResultBean);
                     }
                 } catch (QiniuException ex) {
                     ex.printStackTrace();
                     if (qiNiuListener != null) {
-                        qiNiuListener.onUploadError(type_up,ex.code(), ex.error());
+                        qiNiuListener.onUploadError(type_up, ex.code(), ex.error());
                     }
                 }
             }
         }).start();
     }
 
-    public String getPrivateUrl(String name) {
-        String domainOfBucket = "http://ot9t0q9wl.bkt.clouddn.com";
+//    public String getPrivateImgUrl(String keyName) {
+//        return getPrivateUrl(DomainImg, keyName);
+//    }
+
+    public String getPrivateJsonUrl(String keyName) {
+        return getPrivateUrl(DomainJson, keyName);
+    }
+
+    public String getPrivateUserUrl(String keyName) {
+        return getPrivateUrl(DomainUser, keyName);
+    }
+
+    public String getPublicImgUrl(String keyName) {
+        return getPublicUrl(DomainImg, keyName);
+    }
+
+//    public String getPublicJsonUrl(String keyName) {
+//        return getPublicUrl(DomainJson, keyName);
+//    }
+
+//    public String getPublicUserUrl(String keyName) {
+//        return getPublicUrl(DomainUser, keyName);
+//    }
+
+    private String getPrivateUrl(String domain, String keyName) {
         String encodedFileName = null;
         try {
-            encodedFileName = URLEncoder.encode(name, "utf-8");
+            encodedFileName = URLEncoder.encode(keyName, "utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String publicUrl = String.format("%s/%s", domainOfBucket, encodedFileName);
+        String publicUrl = String.format("%s/%s", domain, encodedFileName);
         Auth auth = Auth.create(accessKey, secretKey);
         long expireInSeconds = 3600;//1小时，可以自定义链接过期时间
         String tempUrl = auth.privateDownloadUrl(publicUrl, expireInSeconds);
         return tempUrl;
     }
 
-    public String getPublicUrl(String name) {
-        String domainOfBucket = "http://ot9t0q9wl.bkt.clouddn.com";
+    private String getPublicUrl(String domain, String keyName) {
         String encodedFileName = null;
         try {
-            encodedFileName = URLEncoder.encode(name, "utf-8");
+            encodedFileName = URLEncoder.encode(keyName, "utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String finalUrl = String.format("%s/%s", domainOfBucket, encodedFileName);
+        String finalUrl = String.format("%s/%s", domain, encodedFileName);
         return finalUrl;
     }
 
-    public void deleteFile(final String name, @NonNull final BaseCallBack baseCallBack) {
+    public void deleteFile(final String keyName, @NonNull final BaseCallBack baseCallBack) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Auth auth = Auth.create(accessKey, secretKey);
                 BucketManager bucketManager = new BucketManager(auth, cfg);
                 try {
-                    bucketManager.delete(bucket, name);
+                    bucketManager.delete(Bucket_Img, keyName);
                 } catch (QiniuException ex) {
                     //如果遇到异常，说明删除失败
                     ex.printStackTrace();
@@ -188,7 +217,7 @@ public class QiNiuModel {
         Auth auth = Auth.create(accessKey, secretKey);
         CdnManager c = new CdnManager(auth);
         String[] domains = new String[]{
-                bucket
+                Bucket_Img
         };
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateandTime = simpleDateFormat.format(new Date());

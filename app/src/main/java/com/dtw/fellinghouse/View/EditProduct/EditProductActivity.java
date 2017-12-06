@@ -98,7 +98,7 @@ public class EditProductActivity extends BaseActivity implements EditProductView
         priceDecoration.setText(String.valueOf(editProduct.getPriceDecoration()));
         imgNameList=editProduct.getProductImgNameList();
         for(int i=0;i<imgNameList.size();i++){
-            mixImgList.add(new QiNiuModel().getPublicUrl(imgNameList.get(i)));
+            mixImgList.add(new QiNiuModel().getPublicImgUrl(imgNameList.get(i)));
         }
         imageRecycleAdapter.notifyDataSetChanged();
     }

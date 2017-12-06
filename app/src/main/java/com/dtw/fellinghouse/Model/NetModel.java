@@ -8,6 +8,7 @@ import com.google.gson.jpush.Gson;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -56,6 +57,39 @@ public class NetModel {
         }).start();
     }
 
+    public <T> void postBean(final URL url, final Class<T> tClass, final OnComplateDataListener onComplateDataListener) {
+        Log.v("dtw","url:"+url);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setRequestMethod("POST");// 设置请求方法为post
+                    httpURLConnection.setDoOutput(true);
+
+                    int responseCode = httpURLConnection.getResponseCode();// 调用此方法就不必再使用conn.connect()方法
+                    if (responseCode == 200) {
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        byte[] bytes = new byte[1024];
+                        int length = -1;
+                        while ((length = inputStream.read(bytes)) != -1) {
+                            byteArrayOutputStream.write(bytes, 0, length);
+                        }
+                        Log.v("dtw",new String(byteArrayOutputStream.toByteArray(),"utf-8"));
+                        T data=StringToObject(new String(byteArrayOutputStream.toByteArray(),"utf-8"), tClass);
+                        onComplateDataListener.onData(responseCode,data);
+                    } else {
+                        Log.v("dtw","error code:"+responseCode);
+                        onComplateDataListener.onData(responseCode,null);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     public <T> void getBean(final URL url, final Class<T> tClass) {
         new Thread(new Runnable() {
             @Override
@@ -88,5 +122,12 @@ public class NetModel {
         Log.v("dtw",tClass.getSimpleName()+"-Json:"+json);
         Gson gson = new Gson();
         return gson.fromJson(json, tClass);
+    }
+
+    public interface OnDataListener{
+        <T> void onData(T data);
+    }
+    public interface OnComplateDataListener{
+        <T> void onData(int code,T data);
     }
 }

@@ -5,4 +5,5 @@ package com.dtw.fellinghouse.View.Setting;
  */
 
 public interface SettingView {
+    void showToast(String msg);
 }

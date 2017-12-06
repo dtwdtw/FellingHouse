@@ -25,17 +25,20 @@ public class LoginPresener{
     public void login(final String phoneNum, final String password){
         jMessageModel.login(phoneNum, password, new JMessageModel.BaseCallBack() {
             @Override
-            public void onResult(int code, String msg) {
-                switch (code){
-                    case 0:
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
+            public void onResult(final int code, String msg) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        switch (code) {
+                            case 0:
                                 loginView.goBack(jMessageModel.getMyInfo());
-                            }
-                        });
-                        break;
-                }
+                                break;
+                            case 801003:
+                                loginView.showToast("用户不存在");
+                                break;
+                        }
+                    }
+                });
             }
         });
     }

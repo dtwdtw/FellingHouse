@@ -53,7 +53,7 @@ public class ProductStaggeredRecycleAdapter extends RecyclerView.Adapter<Product
                 .error(R.drawable.nav_head)
                 .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
         Glide.with(context)
-                .load(new QiNiuModel().getPublicUrl(productBean.getProductImgNameList().get(0)))
+                .load(new QiNiuModel().getPublicImgUrl(productBean.getProductImgNameList().get(0)))
                 .apply(options)
                 .into(holder.productImage);
 //        Log.v("dtw","imageURL:"+QiNiuModel.getInstance().getPrivateUrl(productBean.getProductImgNameList().get(0)));
