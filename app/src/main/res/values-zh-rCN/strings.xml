@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="app_name">资克</string>
+    <string name="action_settings">设置</string>
+    <string name="nav_login">登录</string>
+    <string name="nav_add">添加</string>
+    <string name="nav_chart">咨询客服</string>
+    <string name="nav_share">分享到微信</string>
+    <string name="nav_settings">设置</string>
+    <string name="nav_logout">退出登录</string>
+    <string name="notify_sound_play">发出提示音</string>
+    <string name="notify_message_pop">弹出提示信息</string>
+    <string name="notify_sound_no_play">禁用提示音</string>
+    <string name="notify_message_no_pop">不做任何提示</string>
+    <string name="notify_model">消息提醒方式</string>
+    <string name="user_setting">用户设置</string>
+    <string name="add_admin">添加管理账号</string>
+    <string name="admin_phone">管理员手机号</string>
+    <string name="input_admin_phone">输入用户名</string>
+    <string name="cancle">取消</string>
+    <string name="ok">确定</string>
+    <string name="need_wechart">需要安装微信</string>
+    <string name="need_login">请先登录</string>
+    <string name="regist">注册</string>
+    <string name="phoneNum">手机号</string>
+    <string name="password">密码</string>
+    <string name="login">登录</string>
+    <string name="login_by_sms">验证码登录</string>
+</resources>
